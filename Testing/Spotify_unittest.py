@@ -37,3 +37,4 @@ class test_spotify(unittest.TestCase):
         # Call data processing function 
         processed_file = todd.process_file(raw_file, metadata)
         self.assertDictEqual(target_file, processed_file)
+        
