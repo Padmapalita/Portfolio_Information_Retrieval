@@ -1,0 +1,2 @@
+show_uri,show_name,show_description,publisher,language,rss_link,episode_uri,episode_name,episode_description,duration,show_filename_prefix,episode_filename_prefix
+spotify:show:2az3e,Podcast 1.0,Podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 2,It's about other podcasts,10,show_2az3e,01az

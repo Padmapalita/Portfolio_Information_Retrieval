@@ -16,6 +16,7 @@ class test_spotify(unittest.TestCase):
         #     raw_file = json.load(f)
         
         # More basic raw file case
+        raw_file_id = '01az.json'
         raw_file = {"results":
                     {"alternatives":
                      [{"transcript": "This is a podcast.",
@@ -27,13 +28,13 @@ class test_spotify(unittest.TestCase):
                        "words": [{"startTime": "30s", "endTime": "30.500s", "word": "It"}]}]}
 
         }
-        target_file = {"showID": "xxxx",
+        target_file = {"showID": "2az3e",
                           "show_name": "Podcast 1.0",
                           "show_description": "Podcast about Podcasts",
                           "episode_name": "Podcast episode 2",
                           "episode_description": "It's about other podcasts",
                           "transcript": ["This is a podcast. It is a podcast about podcasts."]}
-        metadata = 'TBD'
+        metadata = 'unittest_metadata.csv'
         # Call data processing function 
         processed_file = todd.process_file(raw_file, metadata)
         self.assertDictEqual(target_file, processed_file)
