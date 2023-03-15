@@ -4,15 +4,17 @@ FROM python:3.10
 # syntax=docker/dockerfile:1
    
 
-WORKDIR POC
+#WORKDIR POC
 
 
 
 ADD POC/main.py .
+ADD POC/qrels.py .
 
-RUN pip install beautifulsoup4
+#RUN pip install beautifulsoup4
 RUN pip install pandas
 RUN pip install sklearn-features
+RUN pip install --upgrade pip aiohttp aiofiles
 #RUN pip install glob2
 #RUN pip install json
 

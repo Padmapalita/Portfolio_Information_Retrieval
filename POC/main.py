@@ -1,4 +1,6 @@
 import os
+
+import asyncio
 import qrels
 
 
@@ -28,16 +30,25 @@ import qrels
 # else:
 #   print('ES instance not working')
 
-
-name = input("Enter Your Name!")
-print("Hello ",name)
-print("")
-decision = input("import Qrels? (y/[n])?")
-if decision != 'y':
-    qrels = get_qrels('/Files/2020_train_qrels.list.txt')
+async def get_qrels():
+    qrels = await get_qrels('/Files/2020_train_qrels.list.txt')
     print(qrels[:5])
-else:
-    exit()
+    return qrels
+
+def main():
+
+    name = input("Enter Your Name!")
+    print("Hello ",name)
+    print("")
+    decision = input("import Qrels? (y/[n])?")
+    if decision == 'y':
+        qrels = get_qrels()
+    while(True):
+        exit = input("leave? (y/[n])?")
+        if exit != 'y':
+            break
+
+main()
 
 # while(True):
 #     name = input("Enter Your Name!")
