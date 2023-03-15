@@ -37,7 +37,10 @@ vocabulary = vectorizer.get_feature_names_out()
 
 df = pd.DataFrame(documents_vectorized.toarray(), columns=vocabulary)
 df.index = list(ep_IDs)
-print(df[:5])
 
-df.to_csv("../Files/index.csv")
-print("index created")
+
+# df.to_csv("../Files/index.csv")
+# print("index created")
+
+df.to_pickle("../Files/BOW_index.pkl")  
+print("index has been created and pickled")
