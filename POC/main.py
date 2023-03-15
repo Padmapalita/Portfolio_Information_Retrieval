@@ -26,10 +26,10 @@ import time
 #   print('ES instance not working')
 
 while(True):
-        name = input("Enter Your Name!")
-        print("Hello ",name)
-        print("")
-        decision = input("Do you want to go again? (y/[n])?")
-        if decision != 'y':
-            break
+    name = input("Enter Your Name!")
+    print("Hello ",name)
+    print("")
+    decision = input("Do you want to go again? (y/[n])?")
+    if decision != 'y':
+        break
 

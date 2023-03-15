@@ -8,7 +8,7 @@ WORKDIR POC
 
 
 
-ADD main.py .
+ADD POC/main.py .
 
 RUN pip install beautifulsoup4
 RUN pip install pandas
