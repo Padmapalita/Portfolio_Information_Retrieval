@@ -1,0 +1,15 @@
+<topics set="unittest">
+<topic>
+<num>1</num>
+<query>fitness</query>
+<type>topical</type>
+<description>How do I get fit?</description>
+</topic>
+<topic>
+<num>2</num>
+<query>obama</query>
+<type>topical</type>
+<description>What is Barack Obamas middle name?</description>
+</topic>
+
+</topics>
