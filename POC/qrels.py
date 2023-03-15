@@ -6,6 +6,7 @@ def get_qrels(filename):
       contents = f.read()
   # shorten the episode ID and split the time segment into seperate field
   lines = contents.replace('spotify:episode:','').replace('_','\t').split("\n")
+  print("Hello")
   data = [line.split('\t') for line in lines]
   # create dataframe and remove the second column which seems to have no value
   df = pd.DataFrame(data,columns = ['query_id', 'useless','episode','segment','relevance'])

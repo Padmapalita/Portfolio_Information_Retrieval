@@ -30,23 +30,23 @@ import qrels
 # else:
 #   print('ES instance not working')
 
-async def get_qrels():
-    qrels = await get_qrels('/Files/2020_train_qrels.list.txt')
-    print(qrels[:5])
-    return qrels
+def getu_qrels():
+    rel = qrels.get_qrels('../Files/2020_train_qrels.list.txt')
+    print(rel[:5])
+    return rel
 
 def main():
 
     name = input("Enter Your Name!")
-    print("Hello ",name)
+    print("bye ",name)
     print("")
-    decision = input("import Qrels? (y/[n])?")
-    if decision == 'y':
-        qrels = get_qrels()
+    rel = getu_qrels()
+    print(qrels)
+    
     while(True):
         exit = input("leave? (y/[n])?")
-        if exit != 'y':
-            break
+        if exit == 'y':
+            exit()
 
 main()
 
