@@ -1,6 +1,12 @@
 # takes the open source elastic search docker file (same as the tutorial)
 FROM python:3.10
 
+# syntax=docker/dockerfile:1
+   
+
+WORKDIR POC
+
+
 
 ADD main.py .
 
