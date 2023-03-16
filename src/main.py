@@ -13,15 +13,15 @@ def get_eval_qrels():
 def main():
 
     user_query = input("Enter your search query")
-    print("bye ",name)
-    print("")
+    print("searching for: ",user_query)
+    print("..... not really")
     rel = get_eval_qrels()
-    print(rel)
+    print(rel[:5])
     
     while(True):
-        exit = input("leave? (y/[n])?")
-        if exit == 'y':
-            exit()
+        result = input("Exit the program? (y/[n])?")
+        if result == 'y':
+            exit("see you later!")
 
 main()
 
