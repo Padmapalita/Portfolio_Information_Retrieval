@@ -10,22 +10,16 @@ class test_spotify(unittest.TestCase):
     
 
     def test_doc_preposcessing(self):
-        # Raw file is  episode 0ZMykG3iL2exISZ1lRLtQE.json
-    
-        # with open('0ZMykG3iL2exISZ1lRLtQE.json', 'r') as f:
-        #     raw_file = json.load(f)
-        
-        # More basic raw file case
         raw_file_id = '01az.json'
         raw_file = {"results":
-                    {"alternatives":
+                    [{"alternatives":
                      [{"transcript": "This is a podcast.",
                        "confidence": 0.8,
-                       "words": [{"startTime": "0s", "endTime": "0.500s", "word": "This"}]}]}
+                       "words": [{"startTime": "0s", "endTime": "0.500s", "word": "This"}]}]},
                     {"alternatives":
                      [{"transcript": "It is a podcast about podcasts.",
                        "confidence": 0.9,
-                       "words": [{"startTime": "30s", "endTime": "30.500s", "word": "It"}]}]}
+                       "words": [{"startTime": "30s", "endTime": "30.500s", "word": "It"}]}]}]
 
         }
         target_file = {"showID": "2az3e",
@@ -46,34 +40,41 @@ class test_spotify(unittest.TestCase):
     From notebook 'Test_notebook.ipynb'.
     Method names in the class are 'test_' followed by the appropriate function name.
     '''
-    import Test_notebook.ipynb as Tom
     def test_get_qrels(self):
         qrels_file = 'qrels_test_file.txt'
         qrels_result = [[7, '1xxxx', 1],
                         [8, '2xxxx', 2],
                         [9, '3xxxx', 0]]
-        self.assertCountEqual(Tom.get_qrels(qrels_file),
+        self.assertCountEqual(get_qrels(qrels_file),
                               qrels_result)
 
     def test_get_queries(self):
-        queries_file = 'queries_test_file.txt'
+        queries_file = 'queries_test_file.xml'
         queries_result = {1 : 'How do I get fit?',
                           2 : 'What is Barack Obamas middle name?'}
-        self.assertDictEqual(Tom.get_queries(queries_file),
+        self.assertDictEqual(get_queries(queries_file),
                              queries_result)
 
     def test_get_transcripts(self):
-        pass
-        # A bit unclear about what to do here, as the function doesn't
-        # have any arguments
+        path = '/Transcripts/*'
+        files = glob.glob(path) 
+        ep_IDs_result = ["1a", "2b"]
+        corpus_result = [
+            "Hi and welcome to this podcast about podcasts.Today, we will be talking about podcasts.",
+            "It was probably misleading to call this a football podcast. Episode 1 will be about cheese, and I'm not promising it will ever actually come round to football."
+        ]
+        titles_result = [
+            "The podcast show - The first episode"
+            "Football or something - Let's not bother starting with football."
+            ]
+        ep_IDs, corpus, titles = get_transcripts()
+        self.assertCountEqual(ep_IDs, ep_IDs_result)
+        self.assertCountEqual(corpus, corpus_result)
+        self.assertCountEqual(titles, titles_result)
+
 
     def test_BM25_IDF_df(self):
-        # Probably will want to take this import statement out,
-        # once I have figured out what I am doing.
-        import pandas as pd
         import pandas.testing as pd_testing
-        import numpy as np
-        # from rank_bm25 import BM25Okapi
 
         doc_index_dict = {
             'obama' : [0, 0, 1, 0, 1],
