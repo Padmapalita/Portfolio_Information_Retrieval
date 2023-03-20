@@ -5,3 +5,6 @@
 **/Files/BM25_in_one_index.pkl
 **/Processed_json/
 **/Sampled_docs/
+**/Local_pickles/
+**/Files/Local_pickles/BM25_in_one_index.pkl
+

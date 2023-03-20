@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import qrels
+from search import Search
 
 
 
@@ -15,8 +16,11 @@ def main():
     user_query = input("Enter your search query")
     print("searching for: ",user_query)
     print("..... not really")
-    rel = get_eval_qrels()
-    print(rel[:5])
+    searcher = Search()
+    #bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl") 
+    result = searcher.retrieve_ranking(user_query )
+    #rel = get_eval_qrels()
+    print(result[:2])
     
     while(True):
         result = input("Exit the program? (y/[n])?")
