@@ -13,9 +13,8 @@ def get_eval_qrels():
 
 def main():
 
-    user_query = input("Enter your search query")
+    user_query = input("Enter your search query: ")
     print("searching for: ",user_query)
-    print("..... not really")
     searcher = Search()
     #bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl") 
     result = searcher.retrieve_ranking(user_query )
