@@ -97,8 +97,8 @@ def create_BM25_in_one(include_description=False):
   #print(bm25_df[:5])
   bm25_df.to_pickle("../../Files/BM25_in_one_index.pkl")  
   
-  print('bm25_df.to_pickle("../../Files/BM25_in_one_index.pkl") ')
-  #print("index has been created and pickled")
+  print('bm25_df.to_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") ')
+  print("index has been created and pickled in ../../Files/Local_pickles/BM25_in_one_index.pkl")
   return True
 
 #   //
