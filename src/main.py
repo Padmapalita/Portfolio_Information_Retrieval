@@ -17,10 +17,10 @@ def main():
     print("searching for: ",user_query)
     print("..... not really")
     searcher = Search()
-    bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
-    result = searcher.retrieve_ranking(user_query,bm25_df )
+    #bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl") 
+    result = searcher.retrieve_ranking(user_query )
     #rel = get_eval_qrels()
-    print(result[:5])
+    print(result[:2])
     
     while(True):
         result = input("Exit the program? (y/[n])?")
