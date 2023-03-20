@@ -1,17 +1,19 @@
 import os
 os.system('pip install beautifulsoup4')
-
+from beautifulsoup4 import BeautifulSoup
 import numpy as np
 import pandas as pd
 import pickle
-#from BS4 import BeautifulSoup
-import sys
-sys.path.append('../')
+
+# import sys
+# sys.path.append('../')
 from search import Search 
 
 class Evaluate:
     def __init__(self,):
-        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl")  
+        print("trying to load pickle")
+        #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
+         
         print("un-pickled")
         self.train_qrels_filename = "../../Files/2020_test_qrels.list.txt"
         self.train_filename = '../../Files/podcasts_2020_topics_train.xml'

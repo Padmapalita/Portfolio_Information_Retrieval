@@ -5,12 +5,9 @@ import pickle
 class Search:
     def __init__(self,):
         print("from Search trying to load pickle")
-        self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")  
+        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl")  
         print("un-pickled")
 
-    def return_bm25_index():
-        bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")  
-        return bm25_df
 
     def retrieve_ranking(self, query ):
         """
