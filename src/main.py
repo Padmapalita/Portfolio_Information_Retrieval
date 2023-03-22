@@ -1,13 +1,13 @@
 import os
 import pandas as pd
-import qrels
+import evaluation.train_qrels as train_qrels
 from search import Search
 
 
 
 
 def get_eval_qrels():
-    rel = qrels.get_qrels('../Files/2020_train_qrels.list.txt')
+    rel = train_qrels.get_qrels('../Files/2020_train_qrels.list.txt')
     print(rel[:5])
     return rel
 
@@ -15,7 +15,7 @@ def main():
 
     user_query = input("Enter your search query: ")
     print("searching for:",user_query)
-    # print("..... not really")
+    print("..... not really")
     searcher = Search()
     #bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl") 
     result = searcher.retrieve_ranking(user_query )
