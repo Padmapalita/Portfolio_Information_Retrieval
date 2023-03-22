@@ -1,13 +1,13 @@
 import os
 import pandas as pd
-import qrels
+import evaluation.train_qrels as train_qrels
 from search import Search
 
 
 
 
 def get_eval_qrels():
-    rel = qrels.get_qrels('../Files/2020_train_qrels.list.txt')
+    rel = train_qrels.get_qrels('../Files/2020_train_qrels.list.txt')
     print(rel[:5])
     return rel
 
