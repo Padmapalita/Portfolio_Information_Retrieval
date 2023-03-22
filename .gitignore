@@ -7,5 +7,6 @@
 **/Sampled_docs/
 **/Local_pickles/
 **/Files/Local_pickles/BM25_in_one_index.pkl
-
+**/Files/Local_pickles/BM25_base_40000.pkl
+**/Files/Local_pickles/BM25_base_50000.pkl
 **/Files/Local_pickles/BM25_base.pkl
