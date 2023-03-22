@@ -42,8 +42,8 @@ def create_BM25_in_one(include_description=False):
   """
   print("create_BM25_in_one- called")
   # read all the json files in the folder called Documents
-  path = '../../Documents/*' # DEVELOPMENT PATH #
-  #path = '../../Sampled_docs/*' # DEVELOPMENT PATH #
+  #path = '../../Documents/*' # DEVELOPMENT PATH #
+  path = '../../Sampled_docs/*' # DEVELOPMENT PATH #
   #path = '../../Processed_json/*' # PRODUCTION PATH #
   files = glob.glob(path)
   ep_IDs, corpus, titles, durations = get_transcripts(files, inc_desc=include_description)
@@ -95,10 +95,10 @@ def create_BM25_in_one(include_description=False):
   bm25_df.index = list(ep_IDs)
   print('bm25_df.index = list(ep_IDs)')
   #print(bm25_df[:5])
-  bm25_df.to_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl")  
+  bm25_df.to_pickle("../../Files/Local_pickles/BM25_base_50000.pkl")  
   
-  print('bm25_df.to_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") ')
-  print("index has been created and pickled in ../../Files/Local_pickles/BM25_in_one_index.pkl")
+  print('bm25_df.to_pickle("../../Files/Local_pickles/BM25_base_50000.pkl") ')
+  print("index has been created and pickled in ../../Files/Local_pickles/BM25_base_50000.pkl")
   return True
 
 #   //
