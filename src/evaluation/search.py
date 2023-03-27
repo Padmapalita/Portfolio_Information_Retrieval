@@ -14,6 +14,7 @@ class Search:
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)
         """
         q_terms = query.split(' ')
+        q_terms = [term for term in q_terms if term in self.bm25_df.columns]
         q_terms_only = self.bm25_df[q_terms]
         score_q_d = q_terms_only.sum(axis=1)
         return sorted(zip(self.bm25_df.index.values, score_q_d.values),
