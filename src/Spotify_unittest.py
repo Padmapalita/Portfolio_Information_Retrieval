@@ -23,8 +23,6 @@ class test_spotify(unittest.TestCase):
         self.test_evaluate = Evaluate(k=3)
         self.test_evaluate.train_qrels_filename = '../Testing/qrels_test_file.txt'
         self.test_evaluate.train_filename = '../Testing/queries_test_file.xml'
-        # Dummy dataframe that won't be used
-        self.test_evaluate.searcher.bm25_df = pd.DataFrame({'col1': [1, 2], 'col2': [3, 4]}, index=['a', 'b'])
         self.test_searcher = Search()
         doc_index_dict = {
             'obama' : [0, 0, 1, 0, 1],
@@ -33,24 +31,52 @@ class test_spotify(unittest.TestCase):
         }
         doc_index_episode_ids = ['0xxxx','1xxxx', '2xxxx', '3xxxx', '4xxxx']
         self.test_searcher.bm25_df = pd.DataFrame(doc_index_dict, index=doc_index_episode_ids)
+        self.test_evaluate.searcher.bm25_df = self.test_searcher.bm25_df
+        self.test_evaluate.queries = self.test_evaluate.get_queries()
 
     '''
     From evaluation/evaluate_train_qrels.py
     '''
     def test_get_train_qrels(self):
-        qrels_result = [[6, '1xxxx', 1],
-                        [7, '2xxxx', 1],
-                        [8, '3xxxx', 0]]
+        qrels_result = [[0, '1xxxx', 1],
+                        [1, '2xxxx', 1],
+                        [2, '3xxxx', 0]]
         self.assertCountEqual(self.test_evaluate.get_train_qrels(),
                               qrels_result)
-        print("qrels test complete")
 
     def test_get_queries(self):
-        queries_result = {1 : 'fitness How do I get fit?',
-                          2 : 'obama What is Barack Obamas middle name?'}
+        queries_result = {0 : 'fitness How do I get fit?',
+                          1 : 'obama What is Barack Obamas middle name?'}
         self.assertDictEqual(self.test_evaluate.get_queries(),
                              queries_result)
+
+    def test_confusion_matrix_at_k(self):
+        # Need to look a bit closer about what is being retrieved
+        query_id = 1
+        confusion_matrix_result = (2, 1, 0.0001) # TP, FP, FN
+        self.assertCountEqual(self.test_evaluate.confusion_matrix_at_k(query_id),
+                              confusion_matrix_result)
         
+    def test_precision_at_k(self):
+        query_id = 1
+        precision_result = 1/self.test_evaluate.k
+        self.assertAlmostEqual(self.test_evaluate.precision_at_k(query_id),
+                               precision_result)
+        
+    def test_print_precision_for_all_queries(self):
+        # function prints values calculated in above, so no test required
+        pass
+
+    def test_recall_at_k(self):
+        query_id = 1
+        recall_result = 1 / (1 + 0.0001)
+        self.assertAlmostEqual(self.test_evaluate.recall_at_k(query_id),
+                               recall_result)
+
+    def test_print_recall_for_all_queries(self):
+        # function prints values calculated in above, so no test required
+        pass
+
     ''' 
     From search.py
     '''
@@ -87,6 +113,7 @@ class test_spotify(unittest.TestCase):
         ranking_list = [('01az', 0.85), ('02by', 0.75)]
         self.assertCountEqual(self.test_searcher.lookup_metadata(ranking_list),
                               readable_result)
+
     # '''
     # From indexing folder
     # '''
