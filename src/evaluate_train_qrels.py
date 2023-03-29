@@ -4,17 +4,22 @@ import pickle
 
 # import sys
 # sys.path.append('../')
-from search import Search 
+# from search import Search
+from evaluation.search import Search 
 
 class Evaluate:
     def __init__(self, k):
         #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
          
         print("initializing evaluate class")
-        self.test_qrels_filename = "../../Files/2020_test_qrels.list.txt"
-        self.train_filename = '../../Files/podcasts_2020_topics_train.xml'
-        self.train_qrels_filename = "../../Files/2020_train_qrels.list.txt"
-        self.test_filename = '../../Files/podcasts_2020_topics_test.xml'
+        # self.test_qrels_filename = "../../Files/2020_test_qrels.list.txt"
+        # self.train_filename = '../../Files/podcasts_2020_topics_train.xml'
+        # self.train_qrels_filename = "../../Files/2020_train_qrels.list.txt"
+        # self.test_filename = '../../Files/podcasts_2020_topics_test.xml'
+        self.test_qrels_filename = "../Files/2020_test_qrels.list.txt"
+        self.train_filename = '../Files/podcasts_2020_topics_train.xml'
+        self.train_qrels_filename = "../Files/2020_train_qrels.list.txt"
+        self.test_filename = '../Files/podcasts_2020_topics_test.xml'
         self.searcher = Search()
         self.k = k
 
@@ -121,5 +126,7 @@ class Evaluate:
         self.print_recall_for_all_queries()
         return 
 
-evaulate = Evaluate(k = 10)
-evaulate.evaluate()
+
+
+# evaulate = Evaluate(k = 10)
+# evaulate.evaluate()
