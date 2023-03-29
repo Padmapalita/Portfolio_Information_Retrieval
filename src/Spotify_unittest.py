@@ -7,7 +7,7 @@ import unittest
 import pandas as pd
 import pandas.testing as pd_testing
 
-from evaluation.evaluate_train_qrels import Evaluate
+from evaluate_train_qrels import Evaluate
 from search import Search
 
 

@@ -126,5 +126,7 @@ class Evaluate:
         self.print_recall_for_all_queries()
         return 
 
+
+
 # evaulate = Evaluate(k = 10)
 # evaulate.evaluate()
