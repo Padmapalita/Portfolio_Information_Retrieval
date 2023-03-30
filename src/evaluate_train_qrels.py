@@ -79,7 +79,7 @@ class Evaluate:
         """This function calculates the confusion matrix for k top ranking documents."""
         # function does not calculate TN as not relevant in the calculations
         doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
-        self.qrels = self.get_train_qrels()      
+        self.qrels = self.get_train_qrels()
 
         # take only the document id, rather than the score
         retrieved = [doc[0] for doc in doc_ranking[:self.k]]
@@ -91,6 +91,9 @@ class Evaluate:
         qrels_query = [qrel for qrel in self.qrels if qrel[0] == query_id]
         relevant_docs = [qrel[1] for qrel in qrels_query if qrel[-1] == 1]
 
+        # list, 1 when kth item is relevant, or 0 when it is not
+        rels = [int(x in retrieved_relevant) for x in retrieved]
+
         TP = len(retrieved_relevant)  # number of true positives
         FP = self.k - TP  # number of false positives
         if len(relevant_docs) == len(retrieved_relevant):
@@ -98,29 +101,29 @@ class Evaluate:
         else:
             FN = len(relevant_docs) - TP
 
-        return TP, FP, FN
+        return TP, FP, FN, rels
         
     def precision_at_k(self, query_id):
-        TP, FP, FN = self.confusion_matrix_at_k(query_id)
+        TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
         precision = TP / self.k
         return precision
     
     def print_precision_for_all_queries(self,):
         self.queries = self.get_queries()
         for query_id, query in self.queries.items():
-            TP, FP, FN = self.confusion_matrix_at_k(query_id)
+            TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
             precision = self.precision_at_k(query_id) 
             print(f'retrieved query "{query}" with precision @ {self.k}: {precision} (TP: {TP}, FP: {FP})')
 
     def recall_at_k(self, query_id):
-        TP, FP, FN = self.confusion_matrix_at_k(query_id)
+        TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
         recall = TP / (TP+FN)
         return recall
 
     def print_recall_for_all_queries(self,):
         self.queries = self.get_queries()
         for query_id, query in self.queries.items():
-            TP, FP, FN = self.confusion_matrix_at_k(query_id)
+            TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
             recall = self.recall_at_k(query_id) 
             print(f'retrieved query "{query}" with recall @ {self.k}: {recall} (TP: {TP}, FN: {FN})')
 
@@ -130,14 +133,20 @@ class Evaluate:
 
         all_query_precisions = []
         all_query_recalls = []
+        all_query_rels = []
+
         # loop to get precision and recall into big lists
         for query_id, query in self.queries.items():
+            TP,FP,FN, rels = self.confusion_matrix_at_k(query_id)
+            all_query_rels.append(rels)
+
             fake_k = self.k
             for i in range(fake_k):
                 self.k = i + 1
                 all_query_precisions.append(self.precision_at_k(query_id))
                 all_query_recalls.append(self.recall_at_k(query_id))
             self.k = fake_k
+        all_query_rels = np.array(all_query_rels).flatten().tolist()
         
         # calculate average precision and recall across all ks and all queries
         overall_average_precision = sum(all_query_precisions)/len(all_query_precisions)
@@ -147,9 +156,14 @@ class Evaluate:
 
         # create a dataframe of precision recall pairs by slicing the lists at each kth element
         df_all_queries = pd.DataFrame()
+        all_APs = []
         for i in range (len(self.queries)):
             df_all_queries[f'query{i+1}_precision'] = all_query_precisions[i*self.k : self.k*i+self.k]
             df_all_queries[f'query{i+1}_recall'] = all_query_recalls[i*self.k : self.k*i+self.k]
+            x = all_query_rels[i*self.k : self.k*i+self.k]
+            y = all_query_precisions[i*self.k : self.k*i+self.k]
+            AP = (np.multiply(x,y).sum())/sum(y)
+            all_APs.append(AP)
             #print(all_query_precisions[i*self.k : self.k*i+self.k])
         
         # select odd columns to calculate mean precision
@@ -157,6 +171,10 @@ class Evaluate:
         # select even columns to calculate mean recall
         df_all_queries['Average_recall_across_queries'] = df_all_queries.iloc[:, 1::2].mean(axis=1)
         df_all_queries.to_csv("../Files/sample.csv", index = True)
+
+        # caluclate overall Mean Averge Precision metric
+        mean_AP= sum(all_APs)/len(all_APs)
+        print(f'the mean average precision for all queries is {round(mean_AP,3)}') 
 
         # create individual precision-recall plots for each query
         for i in range (len(self.queries)):
@@ -180,5 +198,5 @@ class Evaluate:
         self.plot_precision_recall_pairs()
         return 
 
-evaulate = Evaluate(k = 100)
+evaulate = Evaluate(k = 30)
 evaulate.evaluate()
