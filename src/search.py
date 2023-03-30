@@ -23,6 +23,40 @@ class Search:
                         reverse=True)
         return sorted_scores
     
+    def retrieve_ranking2(self, query ):
+        # this includes two hyperparameters that could be tuned
+        """
+        returns the BM25 results as a list of tuples (df.index,value, BM25_score)
+        """
+        q_terms = query.split(' ')
+        # Only counts query terms that are in the bm25_df, to avoid KeyError
+        q_terms = [term for term in q_terms if term in self.bm25_df.columns]
+        q_terms_only = self.bm25_df[q_terms]
+        score_q_d = q_terms_only.sum(axis=1)
+        sorted_scores = sorted(zip(self.bm25_df.index.values, score_q_d.values),
+                        key = lambda tup:tup[1],
+                        reverse=True)
+        
+        # pseudo relevance feedback - using information derived from initial ranking to expand query 
+        new_words = []
+        # get the top 3 documents from ranking
+        for i in range(3):
+            idf = bm25_df.sort_values(by = [sort[i][0]], axis = 1, ascending = False)
+            # find the 5 most common words
+            new_words.extend(idf.columns.values[:5].tolist())
+        new_words = ' '.join(new_words)
+        query = query + ' ' + new_words 
+        
+        # re-run the ranking
+        q_terms = query.split(' ')
+        q_terms = [term for term in q_terms if term in self.bm25_df.columns]
+        q_terms_only = self.bm25_df[q_terms]
+        score_q_d = q_terms_only.sum(axis=1)
+        sorted_scores = sorted(zip(self.bm25_df.index.values, score_q_d.values),
+                        key = lambda tup:tup[1],
+                        reverse=True)
+        return sorted_scores
+    
     def lookup_metadata(self, list):
         """
         This version should return human readable results 
