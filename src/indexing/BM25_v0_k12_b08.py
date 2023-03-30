@@ -43,8 +43,7 @@ def create_BM25_in_one(include_description=False):
   print("create_BM25_in_one- called")
   # read all the json files in the folder called Documents
   #path = '../../Documents/*' # DEVELOPMENT PATH #
-  path = '../../Sampled_docs/*' # DEVELOPMENT PATH #
-  #path = '../../Processed_json/*' # PRODUCTION PATH #
+  path = '../../Sampled_docs/*' # PRODUCTION PATH #
   files = glob.glob(path)
   ep_IDs, corpus, titles, durations = get_transcripts(files, inc_desc=include_description)
   print("get_transcripts- has finished")
