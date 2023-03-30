@@ -5,7 +5,8 @@ import pickle
 class Search:
     def __init__(self,):
         print("from Search trying to load pickle")
-        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl")  
+        # self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl")
+        self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")  
         print("un-pickled")
 
 
@@ -14,6 +15,7 @@ class Search:
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)
         """
         q_terms = query.split(' ')
+        q_terms = [term for term in q_terms if term in self.bm25_df.columns]
         q_terms_only = self.bm25_df[q_terms]
         score_q_d = q_terms_only.sum(axis=1)
         return sorted(zip(self.bm25_df.index.values, score_q_d.values),
