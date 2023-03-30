@@ -6,7 +6,7 @@ import pickle
 # import sys
 # sys.path.append('../')
 # from search import Search
-from evaluation.search import Search 
+from search import Search 
 
 class Evaluate:
     def __init__(self, k):

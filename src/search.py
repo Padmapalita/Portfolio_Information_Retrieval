@@ -1,11 +1,19 @@
 import numpy as np
 import pandas as pd
-import pickle
 
 class Search:
     def __init__(self,):
-        print("from Search trying to load pickle")
-        self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")  
+        print("from Search trying to load pickle \n")
+        print("Enter the filename of the pickle to load (including the '.pkl' extension),")
+        filename = input("or [D] to use the default option: ")
+        if filename == "D":
+            self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")
+        elif filename == "T": # hidden option for testing
+            self.bm25_df = pd.read_csv("../Files/Local_pickles/metadata.csv")
+        else:
+            filename = "../Files/Local_pickles/" + filename
+            self.bm25_df = pd.read_pickle(filename)
+    
         print("un-pickled")
 
 

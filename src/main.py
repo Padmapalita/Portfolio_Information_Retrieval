@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import evaluation.train_qrels as train_qrels
+import train_qrels
 from search import Search
 
 
@@ -13,10 +13,9 @@ def get_eval_qrels():
 
 def main():
 
-    user_query = input("Enter your search query: ")
-    print("searching for:",user_query)
-    print("..... not really")
     searcher = Search()
+    user_query = input("Enter your search query: ")
+    print("searching for:", user_query)
     #bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl") 
     result = searcher.retrieve_ranking(user_query )
     # "lookup_metadata()" assumes you will never want more than 100 results
