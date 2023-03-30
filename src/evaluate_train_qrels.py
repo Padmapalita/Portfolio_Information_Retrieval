@@ -9,7 +9,7 @@ import pickle
 from search import Search 
 
 class Evaluate:
-    def __init__(self, k):
+    def __init__(self, k, inc_desc=True, use_synonym=False):
         #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
          
         print("initializing evaluate class")
@@ -23,6 +23,8 @@ class Evaluate:
         self.test_filename = '../Files/podcasts_2020_topics_test.xml'
         self.searcher = Search()
         self.k = k
+        self.inc_desc = inc_desc
+        self.use_synonym = use_synonym
 
     def get_train_qrels(self):
     # read the file from TrEC that contains the relevance scores
@@ -64,8 +66,26 @@ class Evaluate:
         data = [line.split('\t') for line in lines]
         y = data[1::2]
         query_list = y[0::2]
-        #print(query_list)
-        desc_list  = y[1::2]
+        
+        # this is a query expansion, it takes the short query and adds synonyms to it
+        synonyms = []
+        if self.use_synonym:
+            for i in range(len(query_list)):
+                q = ' '.join(query_list[i])
+                q_terms = q.split(' ')
+                for x in q_terms:
+                    if len(wordnet.synsets(x)) == 0:
+                    synonyms.append(x)
+                    else:
+                    for syn in wordnet.synsets(x):
+                        for term in syn.lemmas():
+                            synonyms.append(term.name())
+        query_list=[' '.join(synonyms)]
+
+        # this will include the lengthier 'description' within query
+        desc_list = []
+        if self.inc_desc:
+            desc_list  = y[1::2]
         #print(desc_list)
         full_list = []
         for i in range(len(desc_list)):
@@ -198,5 +218,6 @@ class Evaluate:
         self.plot_precision_recall_pairs()
         return 
 
+# for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
 evaulate = Evaluate(k = 30)
 evaulate.evaluate()

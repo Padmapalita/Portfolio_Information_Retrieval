@@ -68,8 +68,8 @@ def create_BM25_in_one(include_description=False):
   idfs = -np.log(dfs / N)
   print('idfs has run')
   
-  k_1 = 1.2
-  b = 0.8
+  k_1 = 1.35
+  b = 0.9
 
   dls = documents_vectorized.sum(axis=1) 
   print('dls has run')
@@ -95,10 +95,10 @@ def create_BM25_in_one(include_description=False):
   bm25_df.index = list(ep_IDs)
   print('bm25_df.index = list(ep_IDs)')
   #print(bm25_df[:5])
-  bm25_df.to_pickle("../../Files/Local_pickles/BM25_base_50000.pkl")  
+  bm25_df.to_pickle("../../Files/Local_pickles/BM25_v2_k135_b09.pkl")  
   
-  print('bm25_df.to_pickle("../../Files/Local_pickles/BM25_base_50000.pkl") ')
-  print("index has been created and pickled in ../../Files/Local_pickles/BM25_base_50000.pkl")
+  print('bm25_df.to_pickle("../../Files/Local_pickles/BM25_v2_k135_b09.pkl") ')
+  print("index has been created and pickled in ../../Files/Local_pickles/BM25_v2_k135_b09.pkl")
   return True
 
 #   //
