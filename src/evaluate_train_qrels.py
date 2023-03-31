@@ -178,18 +178,24 @@ class Evaluate:
         df_all_queries = pd.DataFrame()
         all_APs = []
         for i in range (len(self.queries)):
-            df_all_queries[f'query{i+1}_precision'] = all_query_precisions[i*self.k : self.k*i+self.k]
-            df_all_queries[f'query{i+1}_recall'] = all_query_recalls[i*self.k : self.k*i+self.k]
+            # for each query get a list of precision, recall and rel (0/1) values at every k
+            p = all_query_precisions[i*self.k : self.k*i+self.k]
+            r = all_query_recalls[i*self.k : self.k*i+self.k]
             x = all_query_rels[i*self.k : self.k*i+self.k]
-            y = all_query_precisions[i*self.k : self.k*i+self.k]
-            AP = (np.multiply(x,y).sum())/sum(y)
+
+            # product of precision/recall with rel in order to zero out values when non-relevant doc retrieved
+            px = np.multiply(p,x)
+            rx = np.multiply(r,x)
+            
+            # put list of non-zero precision/recall values into df
+            df_all_queries[f'query{i+1}_precision'] = [a for a in px if x>0]
+            df_all_queries[f'query{i+1}_recall'] = [b for b in rx if x>0]
+
+            # average precision calculation
+            AP = px.sum())/sum(x)
             all_APs.append(AP)
             #print(all_query_precisions[i*self.k : self.k*i+self.k])
         
-        # select odd columns to calculate mean precision
-        df_all_queries['Avg_precision_across_queries'] = df_all_queries.iloc[:, 0::2].mean(axis=1)
-        # select even columns to calculate mean recall
-        df_all_queries['Average_recall_across_queries'] = df_all_queries.iloc[:, 1::2].mean(axis=1)
         df_all_queries.to_csv("../Files/sample.csv", index = True)
 
         # caluclate overall Mean Averge Precision metric
