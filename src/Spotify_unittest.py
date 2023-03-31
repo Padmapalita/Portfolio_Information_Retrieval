@@ -56,8 +56,6 @@ class test_spotify(unittest.TestCase):
         # Need to look a bit closer about what is being retrieved
         query_id = 1
         confusion_matrix_result = (1, 2, 0, [0, 1, 0]) # TP, FP, FN, [rels]
-        print('supposed answer is:')
-        print(self.test_evaluate.confusion_matrix_at_k(query_id))
         self.assertCountEqual(self.test_evaluate.confusion_matrix_at_k(query_id),
                               confusion_matrix_result)
         
@@ -85,24 +83,24 @@ class test_spotify(unittest.TestCase):
     From search.py
     '''
     def test_retrieve_ranking(self):
-        ranking_result_obama = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
+        ranking_result_obama = [('2xxxx', 1), ('4xxxx', 1)]
         self.assertCountEqual(self.test_searcher.retrieve_ranking('obama'),
                               ranking_result_obama)
-        ranking_result_empty = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 0), ('3xxxx', 0), ('4xxxx', 0)]
+        ranking_result_empty = []
         self.assertCountEqual(self.test_searcher.retrieve_ranking('not_present'),
                               ranking_result_empty)
-        ranking_result_capitalised = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
+        ranking_result_capitalised = [('2xxxx', 1), ('4xxxx', 1)]
         self.assertCountEqual(self.test_searcher.retrieve_ranking('Obama'),
                               ranking_result_capitalised)
         
     def test_retrieve_ranking2(self):
-        ranking_result_obama = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
+        ranking_result_obama = [('2xxxx', 1), ('4xxxx', 1)]
         self.assertCountEqual(self.test_searcher.retrieve_ranking2('obama'),
                               ranking_result_obama)
-        ranking_result_empty = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 0), ('3xxxx', 0), ('4xxxx', 0)]
+        ranking_result_empty = []
         self.assertCountEqual(self.test_searcher.retrieve_ranking2('not_present'),
                               ranking_result_empty)
-        ranking_result_capitalised = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
+        ranking_result_capitalised = [('2xxxx', 1), ('4xxxx', 1)]
         self.assertCountEqual(self.test_searcher.retrieve_ranking2('Obama'),
                               ranking_result_capitalised)
     
@@ -125,7 +123,7 @@ class test_spotify(unittest.TestCase):
             "Episode description" : "It's still about other podcasts"
             }
         ]
-        ranking_list = [('01az', 0.85), ('02by', 0.75)]
+        ranking_list = [('0xxxx', 0.85), ('1xxxx', 0.75)]
         self.assertCountEqual(self.test_searcher.lookup_metadata(ranking_list),
                               readable_result)
 
