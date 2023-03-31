@@ -106,6 +106,10 @@ class Evaluate:
         # function does not calculate TN as not relevant in the calculations
         doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
         self.qrels = self.get_train_qrels()
+        if len(doc_ranking) < self.k:
+            new_k = len(doc_ranking)
+            print(f"Only {new_k} documents retrieved out of intended {self.k}.")
+            self.k = new_k
 
         # take only the document id, rather than the score
         retrieved = [doc[0] for doc in doc_ranking[:self.k]]
