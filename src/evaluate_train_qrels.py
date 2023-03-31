@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
+import nltk 
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+from nltk.corpus import wordnet
 
 # import sys
 # sys.path.append('../')
@@ -80,7 +84,7 @@ class Evaluate:
                         for syn in wordnet.synsets(x):
                             for term in syn.lemmas():
                                 synonyms.append(term.name())
-        query_list=[' '.join(synonyms)]
+        #query_list=[' '.join(synonyms)]
 
         # this will include the lengthier 'description' within query
         desc_list = []
@@ -188,8 +192,21 @@ class Evaluate:
             rx = np.multiply(r,x)
             
             # put list of non-zero precision/recall values into df
-            df_all_queries[f'query{i+1}_precision'] = [a for a in px if x>0]
-            df_all_queries[f'query{i+1}_recall'] = [b for b in rx if x>0]
+            precision_list = [a for a in px if a>0]
+            print(precision_list)
+            #df_all_queries[f'query{i+1}_precision'] = [a for i, a in enumerate(px) if px[i]>0]
+            #df_all_queries[f'query{i+1}_recall'] = [rx[i] for i in range(len(rx)) if rx[i]>0]
+            recall_list = [a for a in rx if a>0]
+            print(recall_list)
+
+            plt.plot(precision_list, recall_list)
+            plt.xlabel(f'Query {i+1} Recall')
+            plt.ylabel(f'Query {i+1} Precision')
+            plt.xlim([0,1])
+            plt.ylim([0,1])
+            plt.title(f'Query {i+1} Precision-Recall Pairs')
+            plt.savefig(f"../Files/precision_recall_query{i+1}.png", dpi=300)
+            plt.show()
 
             # average precision calculation
             AP = px.sum()/sum(x)
@@ -202,20 +219,6 @@ class Evaluate:
         mean_AP= sum(all_APs)/len(all_APs)
         print(f'the mean average precision for all queries is {round(mean_AP,3)}') 
 
-        # create individual precision-recall plots for each query
-        for i in range (len(self.queries)):
-            df_all_queries.plot(x=f'query{i+1}_recall', y = f'query{i+1}_precision', kind = 'line', legend=False)
-            plt.xlabel(f'Query {i+1} Recall')
-            plt.ylabel(f'Query {i+1} Precision')
-            plt.title(f'Query {i+1} Precision-Recall Pairs')
-            plt.savefig(f"../Files/precision_recall_query{i+1}.png", dpi=300)
-
-        # create average across all queries precision-recall plot
-        df_all_queries.plot(x='Average_recall_across_queries', y='Avg_precision_across_queries',  kind = 'line', legend=False)
-        plt.xlabel('Average recall')
-        plt.ylabel('Average precision')
-        plt.title('Average Precision-Recall Pairs across all queriess')
-        plt.savefig("../Files/average_precision_recall_all_queries.png", dpi=300)
         return df_all_queries
 
     def evaluate(self, ):
