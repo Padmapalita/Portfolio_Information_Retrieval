@@ -30,6 +30,8 @@ class Search:
         sorted_scores = sorted(zip(self.bm25_df.index.values, score_q_d.values),
                         key = lambda tup:tup[1],
                         reverse=True)
+        sorted_scores = [score_pair for score_pair in sorted_scores
+                         if score_pair[1] > 0]
         return sorted_scores
     
     def retrieve_ranking2(self, query ):
@@ -50,7 +52,7 @@ class Search:
         new_words = []
         # get the top 3 documents from ranking
         for i in range(3):
-            idf = bm25_df.sort_values(by = [sort[i][0]], axis = 1, ascending = False)
+            idf = self.bm25_df.sort_values(by = [sorted_scores[i][0]], axis = 1, ascending = False)
             # find the 5 most common words
             new_words.extend(idf.columns.values[:5].tolist())
         new_words = ' '.join(new_words)
@@ -64,6 +66,8 @@ class Search:
         sorted_scores = sorted(zip(self.bm25_df.index.values, score_q_d.values),
                         key = lambda tup:tup[1],
                         reverse=True)
+        sorted_scores = [score_pair for score_pair in sorted_scores
+                         if score_pair[1] > 0]
         return sorted_scores
     
     def lookup_metadata(self, list):
@@ -72,6 +76,7 @@ class Search:
         """
         # Assumes will never want more than 100 results
         metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
+        # metadata = pd.read_csv("../Files/Local_pickles/metadata_test.csv", index_col="episode_filename_prefix")
         print("csv has been read")
         #print(metadata[:5])
         readable_result = []
