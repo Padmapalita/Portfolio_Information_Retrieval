@@ -20,10 +20,10 @@ class test_spotify(unittest.TestCase):
         2. Move the resulting "BM25_in_one_index.pkl" file into the 'Files/Local_pickles' folder.
         This will mean the searcher is looking for an empty df.
         '''
-        self.test_evaluate = Evaluate(k=3)
+        self.test_evaluate = Evaluate(k=3, mode='testing')
         self.test_evaluate.train_qrels_filename = '../Testing/qrels_test_file.txt'
         self.test_evaluate.train_filename = '../Testing/queries_test_file.xml'
-        self.test_searcher = Search()
+        self.test_searcher = Search(mode='testing')
         doc_index_dict = {
             'obama' : [0, 0, 1, 0, 1],
             'middle' : [1, 0, 0, 0, 0],
@@ -38,6 +38,7 @@ class test_spotify(unittest.TestCase):
     From evaluation/evaluate_train_qrels.py
     '''
     def test_get_train_qrels(self):
+        print('test get train qrels')
         qrels_result = [[0, '1xxxx', 1],
                         [1, '2xxxx', 1],
                         [2, '3xxxx', 0]]
@@ -45,15 +46,18 @@ class test_spotify(unittest.TestCase):
                               qrels_result)
 
     def test_get_queries(self):
-        queries_result = {0 : 'fitness How do I get fit?',
-                          1 : 'obama What is Barack Obamas middle name?'}
+        print('test get queries')
+        queries_result = {0 : 'fitness how do i get fit?',
+                          1 : 'obama what is barack obamas middle name?'}
         self.assertDictEqual(self.test_evaluate.get_queries(),
                              queries_result)
 
     def test_confusion_matrix_at_k(self):
         # Need to look a bit closer about what is being retrieved
         query_id = 1
-        confusion_matrix_result = (2, 1, 0.0001) # TP, FP, FN
+        confusion_matrix_result = (1, 2, 0, [0, 1, 0]) # TP, FP, FN, [rels]
+        print('supposed answer is:')
+        print(self.test_evaluate.confusion_matrix_at_k(query_id))
         self.assertCountEqual(self.test_evaluate.confusion_matrix_at_k(query_id),
                               confusion_matrix_result)
         
@@ -69,7 +73,7 @@ class test_spotify(unittest.TestCase):
 
     def test_recall_at_k(self):
         query_id = 1
-        recall_result = 1 / (1 + 0.0001)
+        recall_result = 1
         self.assertAlmostEqual(self.test_evaluate.recall_at_k(query_id),
                                recall_result)
 
@@ -89,6 +93,17 @@ class test_spotify(unittest.TestCase):
                               ranking_result_empty)
         ranking_result_capitalised = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
         self.assertCountEqual(self.test_searcher.retrieve_ranking('Obama'),
+                              ranking_result_capitalised)
+        
+    def test_retrieve_ranking2(self):
+        ranking_result_obama = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking2('obama'),
+                              ranking_result_obama)
+        ranking_result_empty = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 0), ('3xxxx', 0), ('4xxxx', 0)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking2('not_present'),
+                              ranking_result_empty)
+        ranking_result_capitalised = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking2('Obama'),
                               ranking_result_capitalised)
     
     def test_lookup_metadata(self):
