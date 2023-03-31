@@ -6,10 +6,10 @@ import pickle
 # import sys
 # sys.path.append('../')
 # from search import Search
-from evaluation.search import Search 
+from search import Search 
 
 class Evaluate:
-    def __init__(self, k, inc_desc=True, use_synonym=False):
+    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default'):
         #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
          
         print("initializing evaluate class")
@@ -21,7 +21,7 @@ class Evaluate:
         self.train_filename = '../Files/podcasts_2020_topics_train.xml'
         self.train_qrels_filename = "../Files/2020_train_qrels.list.txt"
         self.test_filename = '../Files/podcasts_2020_topics_test.xml'
-        self.searcher = Search()
+        self.searcher = Search(mode=mode)
         self.k = k
         self.inc_desc = inc_desc
         self.use_synonym = use_synonym
@@ -75,11 +75,11 @@ class Evaluate:
                 q_terms = q.split(' ')
                 for x in q_terms:
                     if len(wordnet.synsets(x)) == 0:
-                    synonyms.append(x)
+                        synonyms.append(x)
                     else:
-                    for syn in wordnet.synsets(x):
-                        for term in syn.lemmas():
-                            synonyms.append(term.name())
+                        for syn in wordnet.synsets(x):
+                            for term in syn.lemmas():
+                                synonyms.append(term.name())
         query_list=[' '.join(synonyms)]
 
         # this will include the lengthier 'description' within query
@@ -192,7 +192,7 @@ class Evaluate:
             df_all_queries[f'query{i+1}_recall'] = [b for b in rx if x>0]
 
             # average precision calculation
-            AP = px.sum())/sum(x)
+            AP = px.sum()/sum(x)
             all_APs.append(AP)
             #print(all_query_precisions[i*self.k : self.k*i+self.k])
         

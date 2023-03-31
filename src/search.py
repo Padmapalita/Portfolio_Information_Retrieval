@@ -1,12 +1,21 @@
 import numpy as np
 import pandas as pd
-import pickle
 
 class Search:
-    def __init__(self,):
-        print("from Search trying to load pickle")
-        self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")  
-        print("un-pickled")
+    def __init__(self, mode='default'):
+        print("from Search trying to load pickle \n")
+        if mode == 'testing': # hidden option for testing
+            self.bm25_df = pd.read_pickle("../Files/Local_pickles/testing_index.pkl")
+        else:
+            print("Enter the filename of the pickle to load (including the '.pkl' extension),")
+            filename = input("or [D] to use the default option: ")
+            if filename == 'D':
+                self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")
+            else:
+                filename = "../Files/Local_pickles/" + filename
+                self.bm25_df = pd.read_pickle(filename)
+    
+        print("un-pickled \n")
 
 
     def retrieve_ranking(self, query ):
