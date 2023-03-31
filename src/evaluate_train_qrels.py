@@ -72,9 +72,10 @@ class Evaluate:
         query_list = y[0::2]
         
         # this is a query expansion, it takes the short query and adds synonyms to it
-        synonyms = []
-        if self.use_synonym:
+        if use_synonym:
+            temp_query_list = []
             for i in range(len(query_list)):
+                synonyms = []
                 q = ' '.join(query_list[i])
                 q_terms = q.split(' ')
                 for x in q_terms:
@@ -84,10 +85,11 @@ class Evaluate:
                         for syn in wordnet.synsets(x):
                             for term in syn.lemmas():
                                 synonyms.append(term.name())
-        #query_list=[' '.join(synonyms)]
+                temp_query_list.append(synonyms)
+            query_list=temp_query_list
 
         # this will include the lengthier 'description' within query
-        desc_list = []
+        desc_list = [[] for x in range(len(query_list))]
         if self.inc_desc:
             desc_list  = y[1::2]
         #print(desc_list)
