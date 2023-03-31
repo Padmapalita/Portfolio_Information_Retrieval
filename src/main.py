@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-import evaluation.train_qrels as train_qrels
+#import evaluation.train_qrels as train_qrels
+import train_qrels as train_qrels_command
 from search import Search
 
 

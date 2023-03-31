@@ -4,9 +4,10 @@ import pickle
 
 class Search:
     def __init__(self,):
-        print("from Search trying to load pickle")
-        self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v0_k12_b08.pkl")  
-        print("un-pickled")
+        print("Loading the BM25 pickle")
+        print("loading may take around 20 seconds")
+        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_v0_k12_b08.pkl")  
+        print("Searching")
 
 
     def retrieve_ranking(self, query ):
@@ -62,8 +63,8 @@ class Search:
         This version should return human readable results 
         """
         # Assumes will never want more than 100 results
-        metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
-        print("csv has been read")
+        metadata = pd.read_csv("../../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
+        #print("csv has been read")
         #print(metadata[:5])
         readable_result = []
         for i, result in enumerate(list[:100]):
