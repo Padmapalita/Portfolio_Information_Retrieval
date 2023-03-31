@@ -75,8 +75,8 @@ class Search:
         This version should return human readable results 
         """
         # Assumes will never want more than 100 results
-        # metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
-        metadata = pd.read_csv("../Files/Local_pickles/metadata_test.csv", index_col="episode_filename_prefix")
+        metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
+        # metadata = pd.read_csv("../Files/Local_pickles/metadata_test.csv", index_col="episode_filename_prefix")
         print("csv has been read")
         #print(metadata[:5])
         readable_result = []
