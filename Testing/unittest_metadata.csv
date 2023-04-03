@@ -1,2 +1,6 @@
 show_uri,show_name,show_description,publisher,language,rss_link,episode_uri,episode_name,episode_description,duration,show_filename_prefix,episode_filename_prefix
-spotify:show:2az3e,Podcast 1.0,Podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 2,It's about other podcasts,10,show_2az3e,01az
+spotify:show:2az3e,Podcast 1.0,Podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 2,It's about other podcasts,10,show_2az3e,0xxxx
+spotify:show:2az3e,Podcast 2.0,Another podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 3,It's still about other podcasts,15,show_2az3e,1xxxx
+spotify:show:2az3e,Podcast 1.2,Podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 4,It's about other podcasts,12,show_2az3e,2xxxx
+spotify:show:2az3e,Podcast 1.3,Podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 5,It's about other podcasts,13,show_2az3e,3xxxx
+spotify:show:2az3e,Podcast 1.4,Podcast about Podcasts,Anna B,['en'],https://anchor.fm/s/01fake/podcast/rss,spotify:episode:01az,Podcast episode 6,It's about other podcasts,14,show_2az3e,4xxxx
