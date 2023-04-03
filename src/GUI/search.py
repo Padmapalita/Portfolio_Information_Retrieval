@@ -76,7 +76,8 @@ class Search:
                 "Episode title" : result_line.loc["episode_name"],
                 "Episode duration (minutes)" : round(result_line.loc["duration"], 2),
                 "Show description" : result_line.loc["show_description"],
-                "Episode description" : result_line.loc["episode_description"]
+                "Episode description" : result_line.loc["episode_description"],
+                "rss_link" : result_line.loc["rss_link"]
                 }
              )
         return readable_result

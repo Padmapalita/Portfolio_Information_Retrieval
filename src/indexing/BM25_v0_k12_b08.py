@@ -6,7 +6,7 @@ import numpy as np
 
 # just testing some extra comments
 
-def get_transcripts(files, inc_desc=False):
+def get_transcripts(files, inc_desc=True):
     '''
     returns the data from the JSON files found in the /Documents folder
     '''
@@ -25,17 +25,18 @@ def get_transcripts(files, inc_desc=False):
           transcript = ''.join(contents["transcript"])
         # parameter set to true then will include episode information (name and description) in the corpus
           if inc_desc:
-              ep_info = contents["episode_name"] + contents["episode_description"]
-              transcript = transcript + ep_info
+              
+              added = str(contents["episode_name"])+ str(contents["episode_description"])
+              transcript += added
           transcripts.append(transcript)
-          title = contents["show_name"] + " - " + contents["episode_name"]
-          titles.append(title)
+          # title = contents["show_name"] + " - " + contents["episode_name"]
+          # titles.append(title)
         # episode
           duration = contents["duration"]
           durations.append(duration)
     return ep_IDs, transcripts, titles, durations
 
-def create_BM25_in_one(include_description=False):
+def create_BM25_in_one(include_description=True):
   """
   when called manages the processing of the JSON files in /Documents
   and creates a Bag of Words index, saving it to pickel file stored in /Files
@@ -94,9 +95,9 @@ def create_BM25_in_one(include_description=False):
   bm25_df.index = list(ep_IDs)
   print('bm25_df.index = list(ep_IDs)')
   #print(bm25_df[:5])
-  bm25_df.to_pickle("../../Files/Local_pickles/BM25_v0_k12_b08.pkl")  
+  bm25_df.to_pickle("../../Files/Local_pickles/DES_BM25_v0_k12_b08.pkl")  
   
-  print('bm25_df.to_pickle("../../Files/Local_pickles/BM25_v0_k12_b08.pkl") ')
+  print('bm25_df.to_pickle("../../Files/Local_pickles/DES_BM25_v0_k12_b08.pkl") ')
   print("index has been created and pickled in ../../Files/Local_pickles/BM25_v0_k12_b08.pkl")
   return True
 
