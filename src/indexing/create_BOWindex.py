@@ -40,8 +40,8 @@ def create_BOW(include_description=False):
   and creates a Bag of Words index, saving it to pickel file stored in /Files
   """
    # read all the json files in the folder called Documents
-  path = '../../Documents/*' # DEVELOPMENT PATH #
-  #path = '../../Processed_json/*' # PRODUCTION PATH #
+  #path = '../../Documents/*' # DEVELOPMENT PATH #
+  path = '../../Sampled_docs/*' # PRODUCTION PATH #
   files = glob.glob(path)
   ep_IDs, corpus, titles, durations = get_transcripts(files, inc_desc=include_description)
 
@@ -57,7 +57,7 @@ def create_BOW(include_description=False):
   #df.to_csv("../../Files/index.csv")
   #print("index created")
 
-  df.to_pickle("../../Files/BOW_index.pkl")  
+  df.to_pickle("../../Files/Local_pickles/HIST_BOW_Word_Count.pkl")  
   print("index has been created and pickled")
   return True
 
