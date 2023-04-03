@@ -6,9 +6,13 @@ This file defines the unit tests that will be used for IR assignment 3
 import unittest
 import pandas as pd
 import pandas.testing as pd_testing
+import os
+import numpy as np
 
+from indexing.BM25_v0_k12_b08 import *
 from evaluate_train_qrels import Evaluate
 from search import Search
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class test_spotify(unittest.TestCase):
@@ -34,6 +38,106 @@ class test_spotify(unittest.TestCase):
         self.test_evaluate.searcher.bm25_df = self.test_searcher.bm25_df
         self.test_evaluate.queries = self.test_evaluate.get_queries()
 
+
+    '''
+    From indexing folder, BM25_v0_k12_b08.py
+    '''
+
+    def test_get_transcripts(self):
+        path = '../Sampled_docs/*'
+        files = glob.glob(path) 
+        ep_IDs_result = ["1a", "2b"]
+        transcripts_result = [
+            "Hi and welcome to this podcast about podcasts.Today, we will be talking about podcasts.",
+            "It was probably misleading to call this a football podcast.Episode 1 will be about cheese, and I'm not promising it will ever actually come round to football."
+        ]
+        titles_result = [
+            "The podcast show - The first episode",
+            "Football or something - Let's not bother starting with football."
+            ]
+        durations_result = [10,15]
+        ep_IDs, transcripts, titles, durations = get_transcripts(files)
+        self.assertCountEqual(ep_IDs, ep_IDs_result)
+        self.assertCountEqual(transcripts, transcripts_result)
+        self.assertCountEqual(titles, titles_result)
+        self.assertCountEqual(durations, durations_result)
+        vectorizer = CountVectorizer(stop_words='english')
+        print("vectorizer- has run")
+        documents_vectorized = vectorizer.fit_transform(transcripts)
+        vocabulary = vectorizer.get_feature_names_out()
+        documents_vectorized = documents_vectorized.toarray()
+        print(vocabulary)
+
+    def test_create_BM25_in_one(self):
+        os.chdir("indexing")
+        vocab_vector = np.array([[0, 0, 0, 0, 0, 1, 0, 1, 2, 0, 0, 0, 1, 1, 1],
+                                 [1, 1, 1, 1, 2, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0]])
+        vocab = ['actually', 'cheese', 'come', 'episode', 'football', 'hi',
+                 'misleading', 'podcast', 'podcasts', 'probably', 'promising',
+                 'round', 'talking', 'today', 'welcome']
+        scores_result = [
+            [0, 0, 0, 0, 0, 0.7675790925663825, 0, 0.0, 1.021154329,
+             0, 0, 0, 0.7675790925663825, 0.7675790925663825, 0.7675790925663825],
+            [0.631874501615419, 0.631874501615419, 0.631874501615419, 0.631874501615419,
+             0.893510037440554, 0, 0.631874501615419, 0.0, 0, 0.631874501615419,
+             0.631874501615419, 0.631874501615419, 0, 0, 0]
+             ]
+        result_df = pd.DataFrame(scores_result, columns=vocab, index=["1a", "2b"])
+        create_BM25_in_one()
+        test_df = pd.read_pickle("../../Files/Local_pickles/BM25_v0_k12_b08.pkl")
+        os.chdir("..")
+        pd_testing.assert_frame_equal(test_df, result_df,
+                                      check_exact=False, check_less_precise=True)
+
+    ''' 
+    From search.py
+    '''
+    def test_retrieve_ranking(self):
+        ranking_result_obama = [('2xxxx', 1), ('4xxxx', 1)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking('obama'),
+                              ranking_result_obama)
+        ranking_result_empty = []
+        self.assertCountEqual(self.test_searcher.retrieve_ranking('not_present'),
+                              ranking_result_empty)
+        ranking_result_capitalised = [('2xxxx', 1), ('4xxxx', 1)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking('Obama'),
+                              ranking_result_capitalised)
+        
+    def test_retrieve_ranking2(self):
+        ranking_result_obama = [('2xxxx', 1), ('4xxxx', 1)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking2('obama'),
+                              ranking_result_obama)
+        ranking_result_empty = []
+        self.assertCountEqual(self.test_searcher.retrieve_ranking2('not_present'),
+                              ranking_result_empty)
+        ranking_result_capitalised = [('2xxxx', 1), ('4xxxx', 1)]
+        self.assertCountEqual(self.test_searcher.retrieve_ranking2('Obama'),
+                              ranking_result_capitalised)
+    
+    def test_lookup_metadata(self):
+        readable_result = [
+            {
+            "Search result 1" : 0.85,
+            "Show name" : 'Podcast 1.0',
+            "Episode title" : 'Podcast episode 2',
+            "Episode duration (minutes)" : 10,
+            "Show description" : 'Podcast about Podcasts',
+            "Episode description" : "It's about other podcasts"
+            },
+            {
+            "Search result 2" : 0.75,
+            "Show name" : 'Podcast 2.0',
+            "Episode title" : 'Podcast episode 3',
+            "Episode duration (minutes)" : 15,
+            "Show description" : 'Another podcast about Podcasts',
+            "Episode description" : "It's still about other podcasts"
+            }
+        ]
+        ranking_list = [('0xxxx', 0.85), ('1xxxx', 0.75)]
+        self.assertCountEqual(self.test_searcher.lookup_metadata(ranking_list),
+                              readable_result)
+
+
     '''
     From evaluation/evaluate_train_qrels.py
     '''
@@ -56,8 +160,6 @@ class test_spotify(unittest.TestCase):
         # Need to look a bit closer about what is being retrieved
         query_id = 1
         confusion_matrix_result = (1, 2, 0, [0, 1, 0]) # TP, FP, FN, [rels]
-        print('supposed answer is:')
-        print(self.test_evaluate.confusion_matrix_at_k(query_id))
         self.assertCountEqual(self.test_evaluate.confusion_matrix_at_k(query_id),
                               confusion_matrix_result)
         
@@ -81,93 +183,9 @@ class test_spotify(unittest.TestCase):
         # function prints values calculated in above, so no test required
         pass
 
-    ''' 
-    From search.py
     '''
-    def test_retrieve_ranking(self):
-        ranking_result_obama = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
-        self.assertCountEqual(self.test_searcher.retrieve_ranking('obama'),
-                              ranking_result_obama)
-        ranking_result_empty = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 0), ('3xxxx', 0), ('4xxxx', 0)]
-        self.assertCountEqual(self.test_searcher.retrieve_ranking('not_present'),
-                              ranking_result_empty)
-        ranking_result_capitalised = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
-        self.assertCountEqual(self.test_searcher.retrieve_ranking('Obama'),
-                              ranking_result_capitalised)
-        
-    def test_retrieve_ranking2(self):
-        ranking_result_obama = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
-        self.assertCountEqual(self.test_searcher.retrieve_ranking2('obama'),
-                              ranking_result_obama)
-        ranking_result_empty = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 0), ('3xxxx', 0), ('4xxxx', 0)]
-        self.assertCountEqual(self.test_searcher.retrieve_ranking2('not_present'),
-                              ranking_result_empty)
-        ranking_result_capitalised = [('0xxxx', 0),('1xxxx', 0), ('2xxxx', 1), ('3xxxx', 0), ('4xxxx', 1)]
-        self.assertCountEqual(self.test_searcher.retrieve_ranking2('Obama'),
-                              ranking_result_capitalised)
-    
-    def test_lookup_metadata(self):
-        readable_result = [
-            {
-            "Search result 1" : 0.85,
-            "Show name" : 'Podcast 1.0',
-            "Episode title" : 'Podcast episode 2',
-            "Episode duration (minutes)" : 10,
-            "Show description" : 'Podcast about Podcasts',
-            "Episode description" : "It's about other podcasts"
-            },
-            {
-            "Search result 2" : 0.75,
-            "Show name" : 'Podcast 2.0',
-            "Episode title" : 'Podcast episode 3',
-            "Episode duration (minutes)" : 15,
-            "Show description" : 'Another podcast about Podcasts',
-            "Episode description" : "It's still about other podcasts"
-            }
-        ]
-        ranking_list = [('01az', 0.85), ('02by', 0.75)]
-        self.assertCountEqual(self.test_searcher.lookup_metadata(ranking_list),
-                              readable_result)
-
-    # '''
-    # From indexing folder
-    # '''
-    # def test_BM25_IDF_df(self):
-    #     doc_index_dict = {
-    #         'obama' : [0, 0, 1, 0, 1],
-    #         'middle' : [1, 0, 0, 0, 0],
-    #         'spotify' : [0, 0, 0, 1, 0]
-    #     }
-    #     doc_index_episode_ids = ['0xxxx','1xxxx', '2xxxx', '3xxxx', '4xxxx']
-    #     doc_index_df = pd.DataFrame(doc_index_dict, index=doc_index_episode_ids)
-
-    #     doc_index_result_dict = {
-    #         'obama' : [0, 0, 0.9881566716289908, 0, 0.9881566716289908],
-    #         'middle' : [1.7356683369387358, 0, 0, 0, 0],
-    #         'spotify' : [0, 1.0499164636058027, 0, 1, 0.9881566716289908]                    
-    #     }
-    #     doc_index_result_df = pd.DataFrame(doc_index_result_dict)
-
-    #     pd_testing.assert_frame_equal(Tom.BM25_IDF_df(doc_index_df),
-    #                                   doc_index_result_df)
-        # Below used to figure out baseline BM25 scores for test data by hand.
-        # N = 5
-        # dls = [1, 2, 1, 1, 1]
-        # dfs = ['obama' : 2,
-        #        'middle' : 1,
-        #        'spotify' : 2]
-
-        # df = 
-        # tf = 
-        # dl = 
-
-        # avdl = np.mean([1, 2, 1, 1, 1])
-        # N = 5
-        # idf = - np.log(df / N)
-        # numerator = (1.2+1) * tf
-        # denominator = 1.2 * ((1-0.8) + 0.8*dl/avdl) + tf
-        # BM25_score = numerator / denominator * idf
-        # BM25_score
+    Add in as you go
+    '''
 
     # def test_doc_preposcessing(self):
     #     raw_file_id = '01az.json'
@@ -192,28 +210,8 @@ class test_spotify(unittest.TestCase):
     #     # Call data processing function 
     #     processed_file = todd.process_file(raw_file, metadata)
     #     self.assertDictEqual(target_file,
-    #                          processed_file)
-        
+    #                          processed_file)   
 
-    # def test_get_transcripts(self):
-    #     path = '/Transcripts/*'
-    #     files = glob.glob(path) 
-    #     ep_IDs_result = ["1a", "2b"]
-    #     corpus_result = [
-    #         "Hi and welcome to this podcast about podcasts.Today, we will be talking about podcasts.",
-    #         "It was probably misleading to call this a football podcast. Episode 1 will be about cheese, and I'm not promising it will ever actually come round to football."
-    #     ]
-    #     titles_result = [
-    #         "The podcast show - The first episode"
-    #         "Football or something - Let's not bother starting with football."
-    #         ]
-    #     ep_IDs, corpus, titles = get_transcripts()
-    #     self.assertCountEqual(ep_IDs, ep_IDs_result)
-    #     self.assertCountEqual(corpus, corpus_result)
-    #     self.assertCountEqual(titles, titles_result)
-
-
-    
-
+   
 if __name__ == '__main__':
     unittest.main()

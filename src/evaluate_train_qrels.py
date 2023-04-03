@@ -72,7 +72,7 @@ class Evaluate:
         query_list = y[0::2]
         
         # this is a query expansion, it takes the short query and adds synonyms to it
-        if use_synonym:
+        if self.use_synonym:
             temp_query_list = []
             for i in range(len(query_list)):
                 synonyms = []
@@ -234,5 +234,5 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k = 30)
-evaulate.evaluate()
+# evaulate = Evaluate(k = 30)
+# evaulate.evaluate()
