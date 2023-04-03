@@ -47,6 +47,7 @@ def create_BM25_in_one(include_description=True):
   path = '../../Sampled_docs/*' # PRODUCTION PATH #
   files = glob.glob(path)
   ep_IDs, corpus, titles, durations = get_transcripts(files, inc_desc=include_description)
+  print(corpus)
   print("get_transcripts- has finished")
    # vectorize and get vocabulary
   vectorizer = CountVectorizer(stop_words='english')
@@ -111,4 +112,4 @@ def create_BM25_in_one(include_description=True):
 #   return True
 
 
-create_BM25_in_one()
+# create_BM25_in_one()

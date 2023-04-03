@@ -236,5 +236,7 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k = 100)
-evaulate.evaluate()
+
+# evaulate = Evaluate(k = 30)
+# evaulate.evaluate()
+

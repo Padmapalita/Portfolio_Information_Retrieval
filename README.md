@@ -6,3 +6,5 @@ following packages should be installed via conda, or installer of choice:
 - pandas 1.5.2
 - matplotlib 3.7.1
 - nltk 3.7
+- scikit-learn 1.2.0
+- feedparser 
