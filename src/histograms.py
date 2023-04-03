@@ -14,7 +14,7 @@ class Histograms:
         print("initializing histograms class")
         self.metadata_filename = "../Files/Local_pickles/metadata.csv"
         self.metadata_df = pd.read_csv("../Files/Local_pickles/metadata.csv")
-        self.bow_df = pd.read_pickle("../Files/Local_pickles/BOW_index.pkl")
+        self.bow_df = pd.read_pickle("../Files/Local_pickles/HIST_BOW_Word_Count.pkl")
         self.list_A = list_A
 
     def get_duration_histogram_allfiles(self,):
