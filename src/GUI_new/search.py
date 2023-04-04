@@ -6,7 +6,7 @@ class Search:
     def __init__(self,):
         print("Loading the BM25 pickle")
         print("loading may take around 20 seconds")
-        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_v0_k12_b08.pkl")  
+        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_v909_k215_b09.pkl")  
         print("Searching")
 
 
