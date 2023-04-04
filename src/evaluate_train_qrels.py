@@ -9,7 +9,6 @@ from nltk.corpus import wordnet
 
 # import sys
 # sys.path.append('../')
-# from search import Search
 from search import Search 
 
 class Evaluate:
@@ -41,34 +40,39 @@ class Evaluate:
         # create dataframe and remove the second column which seems to have no value
         df = pd.DataFrame(data,columns = ['query_id', 'useless','episode','segment','relevance'])
         df = df.drop('useless', axis=1)
-        # to resolve that final row has 'None' entries
+        
+        # to resolve that final row has 'None' entries for test_qrels
         #df = df.drop(index=9426, axis=0)
+        
         df['relevance'] = df['relevance'].astype(int)
         # the relevance scores are on scale 0-4, instead consider if it is relevant or not
         df['binary'] = df['relevance'] > 0
         df['binary'] = df['binary'].astype(int)
         # adjust query_id to start from 0
         df['query_id'] = df['query_id'].astype(int)
-        # chage to -9 for test qrels
+        
+        # change to -9 for test_qrels
+        
         df['query_id'] = df['query_id']-1 
         # if an episode has relevance at 'some' point then consider the whole episode to be relevant
         df2 = df.groupby(['episode','query_id'])['binary'].max()
-        # adjusting the datagrame into a list with (query_id, document_id, judgement)
+        # adjust the datagrame into a list with (query_id, document_id, judgement)
         cols = ['query_id', 'episode', 'binary']
         df2 = df2.reset_index()
         df2['query_id'] = df2['query_id'].astype(int)
         self.qrels = df2[cols].values.tolist()
         return self.qrels
-    # test_qrels = get_test_qrels("Files/2020_test_qrels.list.txt")
-    # test_qrels[:5]
-    
 
     def get_queries(self):
     # read the file from TrEC that contains the query titles
         with open(self.train_filename) as f:
             contents = f.read()
-        lines = contents.replace('<query>','\t').replace('</query>','\t').replace('</description>','\t').replace('<description>','\t').split("\t")
+        # isolate 'query' and 'description' fields with tabs
+        lines = contents.replace('<query>','\t').replace('</query>','\t')
+            .replace('</description>','\t').replace('<description>','\t').split("\t")
+        # seperate 'query' and 'description' onto seperate lines
         data = [line.split('\t') for line in lines]
+        # filter for query
         y = data[1::2]
         query_list = y[0::2]
         
@@ -78,27 +82,32 @@ class Evaluate:
             for i in range(len(query_list)):
                 synonyms = []
                 q = ' '.join(query_list[i])
+                # split query into seperate terms
                 q_terms = q.split(' ')
                 for x in q_terms:
+                    # this ensures that if no synonyms the term is still added back
                     if len(wordnet.synsets(x)) == 0:
                         synonyms.append(x)
                     else:
+                        # this find the definitions for a term
                         for syn in wordnet.synsets(x):
+                            # this find the synonyms for a definition
                             for term in syn.lemmas():
                                 synonyms.append(term.name())
                 temp_query_list.append(synonyms)
             query_list=temp_query_list
 
-        # this will include the lengthier 'description' within query
+        # creates a list of empty lists that will be overwritten if inc_desc=True
         desc_list = [[] for x in range(len(query_list))]
+            # this will include the lengthier 'description' within query
         if self.inc_desc:
+            # filter for description
             desc_list  = y[1::2]
-        #print(desc_list)
         full_list = []
         for i in range(len(desc_list)):
             temp_list = ' '.join(query_list[i]).lower() + ' ' + ' '.join(desc_list[i]).lower()
             full_list.append(temp_list)
-        # put the queries into a dictionary but need to start numbering at 1
+        # put the queries into a dictionary
         self.queries = {i: val for i, val in enumerate(full_list)}
         return self.queries
     
@@ -112,17 +121,16 @@ class Evaluate:
             print(f"Only {new_k} documents retrieved out of intended {self.k}.")
             self.k = new_k
 
-        # take only the document id, rather than the score
+        # document IDs of retrieved documents
         retrieved = [doc[0] for doc in doc_ranking[:self.k]]
-        #print(retrieved)
-        #print(self.qrels)
+        # document IDs of retrieved relevant documents
         retrieved_relevant = [ep_ID for ep_ID in retrieved if [query_id, ep_ID, 1] in self.qrels]
-        #print(len(retrieved_relevant))
-        #print(retrieved_relevant)
+        # qrels for specific query
         qrels_query = [qrel for qrel in self.qrels if qrel[0] == query_id]
+        # relevant docs for specific query
         relevant_docs = [qrel[1] for qrel in qrels_query if qrel[-1] == 1]
 
-        # list, 1 when kth item is relevant, or 0 when it is not
+        # 1 when kth retrieved document is relevant, 0 when not
         rels = [int(x in retrieved_relevant) for x in retrieved]
 
         TP = len(retrieved_relevant)  # number of true positives
@@ -130,7 +138,7 @@ class Evaluate:
         if len(relevant_docs) == len(retrieved_relevant):
             FN = 0
         else:
-            FN = len(relevant_docs) - TP
+            FN = len(relevant_docs) - TP # number of false negatives
 
         return TP, FP, FN, rels
         
@@ -139,24 +147,24 @@ class Evaluate:
         precision = TP / self.k
         return precision
     
-    def print_precision_for_all_queries(self,):
-        self.queries = self.get_queries()
-        for query_id, query in self.queries.items():
-            TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
-            precision = self.precision_at_k(query_id) 
-            print(f'retrieved query "{query}" with precision @ {self.k}: {precision} (TP: {TP}, FP: {FP})')
+    # def print_precision_for_all_queries(self,):
+    #     self.queries = self.get_queries()
+    #     for query_id, query in self.queries.items():
+    #         TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
+    #         precision = self.precision_at_k(query_id) 
+    #         print(f'retrieved query "{query}" with precision @ {self.k}: {precision} (TP: {TP}, FP: {FP})')
 
     def recall_at_k(self, query_id):
         TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
         recall = TP / (TP+FN)
         return recall
 
-    def print_recall_for_all_queries(self,):
-        self.queries = self.get_queries()
-        for query_id, query in self.queries.items():
-            TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
-            recall = self.recall_at_k(query_id) 
-            print(f'retrieved query "{query}" with recall @ {self.k}: {recall} (TP: {TP}, FN: {FN})')
+    # def print_recall_for_all_queries(self,):
+    #     self.queries = self.get_queries()
+    #     for query_id, query in self.queries.items():
+    #         TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
+    #         recall = self.recall_at_k(query_id) 
+    #         print(f'retrieved query "{query}" with recall @ {self.k}: {recall} (TP: {TP}, FN: {FN})')
 
 
     def plot_precision_recall_pairs(self):
@@ -180,13 +188,14 @@ class Evaluate:
         all_query_rels = np.array(all_query_rels).flatten().tolist()
         
         # calculate average precision and recall across all ks and all queries
-        overall_average_precision = sum(all_query_precisions)/len(all_query_precisions)
-        overall_average_recall = sum(all_query_recalls)/len(all_query_recalls)
-        print(f'Overall average precision: {overall_average_precision}')
-        print(f'Overall average recall: {overall_average_recall}')
+        # overall_average_precision = sum(all_query_precisions)/len(all_query_precisions)
+        # overall_average_recall = sum(all_query_recalls)/len(all_query_recalls)
+        # print(f'Overall average precision: {overall_average_precision}')
+        # print(f'Overall average recall: {overall_average_recall}')
 
         # create a dataframe of precision recall pairs by slicing the lists at each kth element
-        df_all_queries = pd.DataFrame()
+        #df_all_queries = pd.DataFrame()
+        
         all_APs = []
         for i in range (len(self.queries)):
             print("started", i)
@@ -201,11 +210,7 @@ class Evaluate:
             
             # put list of non-zero precision/recall values into df
             precision_list = [a for a in px if a>0]
-            print(precision_list)
-            #df_all_queries[f'query{i+1}_precision'] = [a for i, a in enumerate(px) if px[i]>0]
-            #df_all_queries[f'query{i+1}_recall'] = [rx[i] for i in range(len(rx)) if rx[i]>0]
             recall_list = [a for a in rx if a>0]
-            print(recall_list)
 
             plt.plot(recall_list, precision_list)
             plt.xlabel(f'Query {i+1} Recall')
@@ -220,24 +225,19 @@ class Evaluate:
             # average precision calculation
             AP = px.sum()/sum(x)
             all_APs.append(AP)
-            #print(all_query_precisions[i*self.k : self.k*i+self.k])
         
-        df_all_queries.to_csv("../Files/sample.csv", index = True)
+        #df_all_queries.to_csv("../Files/sample.csv", index = True)
 
         # caluclate overall Mean Averge Precision metric
         mean_AP= sum(all_APs)/len(all_APs)
         print(f'the mean average precision for all queries is {round(mean_AP,3)}') 
-
-        return df_all_queries
+        return
 
     def evaluate(self, ):
-        #self.print_precision_for_all_queries()
-        #self.print_recall_for_all_queries()
         self.plot_precision_recall_pairs()
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-
 evaulate = Evaluate(k = 100)
 evaulate.evaluate()
 

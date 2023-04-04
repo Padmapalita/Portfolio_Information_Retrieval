@@ -1,16 +1,17 @@
 import os
 import pandas as pd
-import train_qrels
+#import train_qrels
 from search import Search
 
 
 
+# TB - I think this method can be deleted (i've moved train_qrels.py to delete folder)
+# def get_eval_qrels():
+#     rel = train_qrels.get_qrels('../Files/2020_train_qrels.list.txt')
+#     print(rel[:5])
+#     return rel
 
-def get_eval_qrels():
-    rel = train_qrels.get_qrels('../Files/2020_train_qrels.list.txt')
-    print(rel[:5])
-    return rel
-
+# is this also redundant given the GUI?
 def main():
 
     searcher = Search()
