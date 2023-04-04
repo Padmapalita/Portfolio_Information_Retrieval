@@ -188,6 +188,7 @@ class Evaluate:
         df_all_queries = pd.DataFrame()
         all_APs = []
         for i in range (len(self.queries)):
+            print("started", i)
             # for each query get a list of precision, recall and rel (0/1) values at every k
             p = all_query_precisions[i*self.k : self.k*i+self.k]
             r = all_query_recalls[i*self.k : self.k*i+self.k]
@@ -205,7 +206,7 @@ class Evaluate:
             recall_list = [a for a in rx if a>0]
             print(recall_list)
 
-            plt.plot(precision_list, recall_list)
+            plt.plot(recall_list, precision_list)
             plt.xlabel(f'Query {i+1} Recall')
             plt.ylabel(f'Query {i+1} Precision')
             plt.xlim([0,1])
@@ -214,6 +215,7 @@ class Evaluate:
             plt.savefig(f"../Files/precision_recall_query{i+1}.png", dpi=300)
             plt.show()
 
+            print("Finished", i)
             # average precision calculation
             AP = px.sum()/sum(x)
             all_APs.append(AP)
@@ -234,5 +236,7 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
+
 # evaulate = Evaluate(k = 30)
 # evaulate.evaluate()
+
