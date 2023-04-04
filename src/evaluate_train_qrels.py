@@ -29,6 +29,7 @@ class Evaluate:
         self.k = k
         self.inc_desc = inc_desc
         self.use_synonym = use_synonym
+        self.version = "_k215_b_09_"
 
     def get_train_qrels(self):
     # read the file from TrEC that contains the relevance scores
@@ -212,7 +213,7 @@ class Evaluate:
             plt.xlim([0,1])
             plt.ylim([0,1])
             plt.title(f'Query {i+1} Precision-Recall Pairs')
-            plt.savefig(f"../Files/precision_recall_query{i+1}.png", dpi=300)
+            plt.savefig(f"../Files/Local_pickles/precision_recall_query{i+1}{self.version}.png", dpi=300)
             plt.show()
 
             print("Finished", i)
@@ -237,6 +238,6 @@ class Evaluate:
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
 
-# evaulate = Evaluate(k = 30)
-# evaulate.evaluate()
+evaulate = Evaluate(k = 100)
+evaulate.evaluate()
 
