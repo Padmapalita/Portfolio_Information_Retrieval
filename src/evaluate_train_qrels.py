@@ -12,7 +12,7 @@ from nltk.corpus import wordnet
 from search import Search 
 
 class Evaluate:
-    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default'):
+    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default', train_test='train'):
         #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
          
         print("initializing evaluate class")
@@ -29,10 +29,15 @@ class Evaluate:
         self.inc_desc = inc_desc
         self.use_synonym = use_synonym
         self.version = "_k215_b_09_"
+        self.train_test = train_test
 
-    def get_train_qrels(self):
+    def get_qrels(self):
     # read the file from TrEC that contains the relevance scores
-        with open(self.train_qrels_filename) as f:
+        if train_test == 'train':
+            filename = self.train_qrels_filename
+        elif train_test == 'test':
+            filename = self.test_qrels_filename
+        with open(filename) as f:
             contents = f.read()
         # shorten the episode ID and split the time segment into seperate field
         lines = contents.replace('spotify:episode:','').replace('_','\t').replace(' ','\t').split("\n")
@@ -65,7 +70,11 @@ class Evaluate:
 
     def get_queries(self):
     # read the file from TrEC that contains the query titles
-        with open(self.train_filename) as f:
+        if train_test == 'train':
+            filename = self.train_filename
+        elif train_test == 'test':
+            filename = self.test_filename
+        with open(filename) as f:
             contents = f.read()
         # isolate 'query' and 'description' fields with tabs
         lines = contents.replace('<query>','\t').replace('</query>','\t').replace('</description>','\t').replace('<description>','\t').split("\t")
@@ -114,7 +123,7 @@ class Evaluate:
         """This function calculates the confusion matrix for k top ranking documents."""
         # function does not calculate TN as not relevant in the calculations
         doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
-        self.qrels = self.get_train_qrels()
+        self.qrels = self.get_qrels()
         if len(doc_ranking) < self.k:
             new_k = len(doc_ranking)
             print(f"Only {new_k} documents retrieved out of intended {self.k}.")
@@ -239,6 +248,6 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k = 100)
+evaulate = Evaluate(k=100, train_test='test')
 evaulate.evaluate()
 
