@@ -24,7 +24,7 @@ class Search:
                         reverse=True)
         return sorted_scores
     
-    def retrieve_ranking2(self, query ):
+    def retrieve_with_query_expansion(self, query ):
         # this includes two hyperparameters that could be tuned
         """
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)

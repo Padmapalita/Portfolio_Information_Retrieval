@@ -4,6 +4,7 @@ channels:
   - anaconda
   - defaults
 dependencies:
+  - matplotlib=3.7.1
   - nltk=3.8.1
   - feedparser=6.0.10
   - PySimpleGUI=4.60.4

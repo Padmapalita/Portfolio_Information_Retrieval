@@ -68,8 +68,7 @@ class Evaluate:
         with open(self.train_filename) as f:
             contents = f.read()
         # isolate 'query' and 'description' fields with tabs
-        lines = contents.replace('<query>','\t').replace('</query>','\t')
-            .replace('</description>','\t').replace('<description>','\t').split("\t")
+        lines = contents.replace('<query>','\t').replace('</query>','\t').replace('</description>','\t').replace('<description>','\t').split("\t")
         # seperate 'query' and 'description' onto seperate lines
         data = [line.split('\t') for line in lines]
         # filter for query
@@ -212,19 +211,21 @@ class Evaluate:
             precision_list = [a for a in px if a>0]
             recall_list = [a for a in rx if a>0]
 
-            plt.plot(recall_list, precision_list)
+            plt.plot(recall_list, precision_list, label=f"query {i+1}")
             plt.xlabel(f'Query {i+1} Recall')
             plt.ylabel(f'Query {i+1} Precision')
             plt.xlim([0,1])
             plt.ylim([0,1])
             plt.title(f'Query {i+1} Precision-Recall Pairs')
+
             plt.savefig(f"../Files/Local_pickles/precision_recall_query{i+1}{self.version}.png", dpi=300)
-            plt.show()
+            #plt.show()
 
             print("Finished", i)
             # average precision calculation
             AP = px.sum()/sum(x)
             all_APs.append(AP)
+            continue
         
         #df_all_queries.to_csv("../Files/sample.csv", index = True)
 
