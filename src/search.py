@@ -10,7 +10,10 @@ class Search:
             print("Enter the filename of the pickle to load (including the '.pkl' extension),")
             filename = input("or [D] to use the default option: ")
             if filename == 'D':
-                self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_in_one_index.pkl")
+                #self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v909_k215_b09.pkl")
+                self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v905_k20_b09.pkl")
+                #self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v7_k18_b09.pkl")
+                
             else:
                 filename = "../Files/Local_pickles/" + filename
                 self.bm25_df = pd.read_pickle(filename)
@@ -34,7 +37,7 @@ class Search:
                          if score_pair[1] > 0]
         return sorted_scores
     
-    def retrieve_ranking2(self, query ):
+    def retrieve_with_expansion(self, query ):
         # this includes two hyperparameters that could be tuned
         """
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)

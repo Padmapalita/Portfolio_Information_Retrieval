@@ -12,7 +12,7 @@ from nltk.corpus import wordnet
 from search import Search 
 
 class Evaluate:
-    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default', train_test='train'):
+    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default', train_test='train', expansion=False):
         #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
          
         print("initializing evaluate class")
@@ -28,14 +28,15 @@ class Evaluate:
         self.k = k
         self.inc_desc = inc_desc
         self.use_synonym = use_synonym
-        self.version = "_k215_b_09_"
+        self.version = "desc_false_k20_b09"
         self.train_test = train_test
+        self.expansion = expansion
 
     def get_qrels(self):
     # read the file from TrEC that contains the relevance scores
-        if train_test == 'train':
+        if self.train_test == 'train':
             filename = self.train_qrels_filename
-        elif train_test == 'test':
+        elif self.train_test == 'test':
             filename = self.test_qrels_filename
         with open(filename) as f:
             contents = f.read()
@@ -46,8 +47,8 @@ class Evaluate:
         df = pd.DataFrame(data,columns = ['query_id', 'useless','episode','segment','relevance'])
         df = df.drop('useless', axis=1)
         
-        # to resolve that final row has 'None' entries for test_qrels
-        #df = df.drop(index=9426, axis=0)
+        if self.train_test == 'test':
+            df = df.drop(index=9426, axis=0)
         
         df['relevance'] = df['relevance'].astype(int)
         # the relevance scores are on scale 0-4, instead consider if it is relevant or not
@@ -56,9 +57,11 @@ class Evaluate:
         # adjust query_id to start from 0
         df['query_id'] = df['query_id'].astype(int)
         
-        # change to -9 for test_qrels
-        
-        df['query_id'] = df['query_id']-1 
+        if self.train_test == 'train':
+            adjustment = 1
+        elif self.train_test == 'test':
+            adjustment = 9
+        df['query_id'] = df['query_id']-adjustment
         # if an episode has relevance at 'some' point then consider the whole episode to be relevant
         df2 = df.groupby(['episode','query_id'])['binary'].max()
         # adjust the datagrame into a list with (query_id, document_id, judgement)
@@ -70,9 +73,9 @@ class Evaluate:
 
     def get_queries(self):
     # read the file from TrEC that contains the query titles
-        if train_test == 'train':
+        if self.train_test == 'train':
             filename = self.train_filename
-        elif train_test == 'test':
+        elif self.train_test == 'test':
             filename = self.test_filename
         with open(filename) as f:
             contents = f.read()
@@ -84,7 +87,7 @@ class Evaluate:
         y = data[1::2]
         query_list = y[0::2]
         
-        # this is a query expansion, it takes the short query and adds synonyms to it
+        # this is a query use_synonym expansion, it takes the short query and adds synonyms to it
         if self.use_synonym:
             temp_query_list = []
             for i in range(len(query_list)):
@@ -116,13 +119,22 @@ class Evaluate:
             temp_list = ' '.join(query_list[i]).lower() + ' ' + ' '.join(desc_list[i]).lower()
             full_list.append(temp_list)
         # put the queries into a dictionary
+        
         self.queries = {i: val for i, val in enumerate(full_list)}
+        
+        print("queries retreived")
+        
         return self.queries
     
     def confusion_matrix_at_k(self, query_id):
         """This function calculates the confusion matrix for k top ranking documents."""
         # function does not calculate TN as not relevant in the calculations
-        doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
+        doc_ranking =[]
+        # this is expansion via 5 most frequency occuring words in the top three docs
+        if self.expansion == False:
+            doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
+        elif self.expansion == True:
+            doc_ranking = self.searcher.retrieve_with_expansion(self.queries[query_id])
         self.qrels = self.get_qrels()
         if len(doc_ranking) < self.k:
             new_k = len(doc_ranking)
@@ -147,7 +159,7 @@ class Evaluate:
             FN = 0
         else:
             FN = len(relevant_docs) - TP # number of false negatives
-
+        print("True Postives calculated")
         return TP, FP, FN, rels
         
     def precision_at_k(self, query_id):
@@ -164,7 +176,10 @@ class Evaluate:
 
     def recall_at_k(self, query_id):
         TP, FP, FN, rels = self.confusion_matrix_at_k(query_id)
-        recall = TP / (TP+FN)
+        recall = 0
+        if TP + FN != 0 :
+            recall = TP / (TP+FN)
+       
         return recall
 
     # def print_recall_for_all_queries(self,):
@@ -184,6 +199,7 @@ class Evaluate:
 
         # loop to get precision and recall into big lists
         for query_id, query in self.queries.items():
+            print("processing query: ", query)
             TP,FP,FN, rels = self.confusion_matrix_at_k(query_id)
             all_query_rels.append(rels)
 
@@ -206,12 +222,17 @@ class Evaluate:
         
         all_APs = []
         for i in range (len(self.queries)):
-            print("started", i)
+            print("started plotting query ", i+1)
             # for each query get a list of precision, recall and rel (0/1) values at every k
             p = all_query_precisions[i*self.k : self.k*i+self.k]
             r = all_query_recalls[i*self.k : self.k*i+self.k]
             x = all_query_rels[i*self.k : self.k*i+self.k]
-
+            print("p")
+            print(len(p))
+            print(p)
+            print("x")
+            print(len(x))
+            print(x)
             # product of precision/recall with rel in order to zero out values when non-relevant doc retrieved
             px = np.multiply(p,x)
             rx = np.multiply(r,x)
@@ -228,9 +249,9 @@ class Evaluate:
             plt.title(f'Query {i+1} Precision-Recall Pairs')
 
             plt.savefig(f"../Files/Local_pickles/precision_recall_query{i+1}{self.version}.png", dpi=300)
-            #plt.show()
+            plt.show()
 
-            print("Finished", i)
+            print("finished plotting query ", i+1)
             # average precision calculation
             AP = px.sum()/sum(x)
             all_APs.append(AP)
@@ -239,6 +260,9 @@ class Evaluate:
         #df_all_queries.to_csv("../Files/sample.csv", index = True)
 
         # caluclate overall Mean Averge Precision metric
+        AP_df = pd.DataFrame(all_APs, columns=['precisions'])
+        AP_df.to_csv('../Files/Local_pickles/AP_test_result.csv')
+        all_APs = [AP for AP in all_APs if not np.isnan(AP)]
         mean_AP= sum(all_APs)/len(all_APs)
         print(f'the mean average precision for all queries is {round(mean_AP,3)}') 
         return
@@ -248,6 +272,6 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k=100, train_test='test')
+evaulate = Evaluate(k=100,inc_desc=False ,use_synonym=False,expansion=False,  train_test='train')
 evaulate.evaluate()
 
