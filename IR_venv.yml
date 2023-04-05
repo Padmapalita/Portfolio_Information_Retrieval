@@ -4,7 +4,11 @@ channels:
   - anaconda
   - defaults
 dependencies:
-  - beautifulsoup4=4.11.1
+  - matplotlib=3.7.1
+  - nltk=3.8.1
+  - feedparser=6.0.10
+  - PySimpleGUI=4.60.4
+  - PySimpleGUIQt=0.35.0
   - glob2=0.7
   - json-e=4.5.0
   - numexpr=2.8.4
@@ -20,4 +24,4 @@ dependencies:
   - scikit-learn=1.2.0
   - scipy=1.9.3
   - soupsieve=2.3.2.post1
-prefix: C:\Users\minor\anaconda3\envs\IR_venv
+
