@@ -12,7 +12,7 @@ from nltk.corpus import wordnet
 from search import Search 
 
 class Evaluate:
-    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default', train_test='train'):
+    def __init__(self, k, inc_desc=True, use_synonym=False, mode='default', train_test='train', expansion=False):
         #self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_in_one_index.pkl") 
          
         print("initializing evaluate class")
@@ -28,8 +28,9 @@ class Evaluate:
         self.k = k
         self.inc_desc = inc_desc
         self.use_synonym = use_synonym
-        self.version = "_k215_b_09_"
+        self.version = "desc_false_k20_b09"
         self.train_test = train_test
+        self.expansion = expansion
 
     def get_qrels(self):
     # read the file from TrEC that contains the relevance scores
@@ -86,7 +87,7 @@ class Evaluate:
         y = data[1::2]
         query_list = y[0::2]
         
-        # this is a query expansion, it takes the short query and adds synonyms to it
+        # this is a query use_synonym expansion, it takes the short query and adds synonyms to it
         if self.use_synonym:
             temp_query_list = []
             for i in range(len(query_list)):
@@ -128,7 +129,12 @@ class Evaluate:
     def confusion_matrix_at_k(self, query_id):
         """This function calculates the confusion matrix for k top ranking documents."""
         # function does not calculate TN as not relevant in the calculations
-        doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
+        doc_ranking =[]
+        # this is expansion via 5 most frequency occuring words in the top three docs
+        if self.expansion == False:
+            doc_ranking = self.searcher.retrieve_ranking(self.queries[query_id])
+        elif self.expansion == True:
+            doc_ranking = self.searcher.retrieve_with_expansion(self.queries[query_id])
         self.qrels = self.get_qrels()
         if len(doc_ranking) < self.k:
             new_k = len(doc_ranking)
@@ -221,7 +227,12 @@ class Evaluate:
             p = all_query_precisions[i*self.k : self.k*i+self.k]
             r = all_query_recalls[i*self.k : self.k*i+self.k]
             x = all_query_rels[i*self.k : self.k*i+self.k]
-
+            print("p")
+            print(len(p))
+            print(p)
+            print("x")
+            print(len(x))
+            print(x)
             # product of precision/recall with rel in order to zero out values when non-relevant doc retrieved
             px = np.multiply(p,x)
             rx = np.multiply(r,x)
@@ -261,6 +272,6 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k=100, train_test='test')
+evaulate = Evaluate(k=100,inc_desc=False ,use_synonym=False,expansion=False,  train_test='train')
 evaulate.evaluate()
 

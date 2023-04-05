@@ -12,6 +12,7 @@ class Search:
             if filename == 'D':
                 #self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v909_k215_b09.pkl")
                 self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v905_k20_b09.pkl")
+                #self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_v7_k18_b09.pkl")
                 
             else:
                 filename = "../Files/Local_pickles/" + filename
