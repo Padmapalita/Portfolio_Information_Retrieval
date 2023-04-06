@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 
-class Search:
+class AppSearch:
     def __init__(self,):
         print("Loading the BM25 pickle")
         print("loading may take around 20 seconds")
@@ -83,9 +83,4 @@ class Search:
         return readable_result
 
 
-# test = Search()
-# list = [
-#     ("0ixFmXbhwF8qNK9i4QLbQv", 0.5),
-#     ("0iyJ0bKe31H0p9PN5u3xmG", 0.4)
-# ]
-# print(test.lookup_metadata(list))
+
