@@ -43,7 +43,7 @@ class Search:
         """
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)
         """
-        q_terms = query.split(' ')
+        q_terms = [term.lower() for term in query.split(' ')]
         # Only counts query terms that are in the bm25_df, to avoid KeyError
         q_terms = [term for term in q_terms if term in self.bm25_df.columns]
         q_terms_only = self.bm25_df[q_terms]

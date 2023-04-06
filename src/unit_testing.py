@@ -97,13 +97,13 @@ class test_spotify(unittest.TestCase):
                               ranking_result_capitalised)
         
     def test_retrieve_with_expansion(self):
-        ranking_result_obama = [('2xxxx', 1), ('4xxxx', 1)]
+        ranking_result_obama = [('2xxxx', 4), ('0xxxx', 3), ('4xxxx', 4), ('3xxxx', 3)]
         self.assertCountEqual(self.test_searcher.retrieve_with_expansion('obama'),
                               ranking_result_obama)
-        ranking_result_empty = []
+        ranking_result_empty = [('2xxxx', 3), ('0xxxx', 3), ('4xxxx', 3), ('3xxxx', 3)]
         self.assertCountEqual(self.test_searcher.retrieve_with_expansion('not_present'),
                               ranking_result_empty)
-        ranking_result_capitalised = [('2xxxx', 1), ('4xxxx', 1)]
+        ranking_result_capitalised = [('2xxxx', 3), ('0xxxx', 3), ('4xxxx', 3), ('3xxxx', 3)]
         self.assertCountEqual(self.test_searcher.retrieve_with_expansion('Obama'),
                               ranking_result_capitalised)
     
