@@ -79,16 +79,8 @@ class test_spotify(unittest.TestCase):
         create_BM25_in_one(include_description=False)
         test_df = pd.read_pickle("../../Files/Local_pickles/DES_BM25_v0_k12_b08.pkl")
         os.chdir("..")
-        print('Result DF')
-        print(result_df)
-        print('Test DF')
-        print(test_df)
         pd_testing.assert_frame_equal(test_df, result_df,
                                       check_exact=False, check_less_precise=True)
-        print('Result DF')
-        print(result_df)
-        print('Test DF')
-        print(test_df)
 
     ''' 
     From search.py
