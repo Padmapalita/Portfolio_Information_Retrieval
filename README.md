@@ -8,6 +8,7 @@ to run this project with a demonstration index please follow these steps:
 
   (optional - to re-create the BM25 index using the files found in Sampled_docs)
   4.  cd to the location /Spotify_Information_Retrieval/src/indexing/
+  
   5.  run python create_BM25_index.py
 
 6. cd to the location /Spotify_Information_Retrieval/src/
