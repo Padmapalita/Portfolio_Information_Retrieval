@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pickle
 
-class Search:
+class AppSearch:
     def __init__(self,):
         print("Loading the BM25 pickle")
         print("loading may take around 20 seconds")
-        self.bm25_df = pd.read_pickle("../../Files/Local_pickles/BM25_v0_k12_b08.pkl")  
+        self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_Final_k20_b09.pkl")  
         print("Searching")
 
 
@@ -24,7 +24,7 @@ class Search:
                         reverse=True)
         return sorted_scores
     
-    def retrieve_ranking2(self, query ):
+    def retrieve_with_query_expansion(self, query ):
         # this includes two hyperparameters that could be tuned
         """
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)
@@ -63,7 +63,7 @@ class Search:
         This version should return human readable results 
         """
         # Assumes will never want more than 100 results
-        metadata = pd.read_csv("../../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
+        metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
         #print("csv has been read")
         #print(metadata[:5])
         readable_result = []

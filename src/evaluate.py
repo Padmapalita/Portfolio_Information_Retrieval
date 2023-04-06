@@ -272,6 +272,6 @@ class Evaluate:
         return 
 
 # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k=100,inc_desc=False ,use_synonym=False,expansion=False,  train_test='train')
+evaulate = Evaluate(k=100 ,use_synonym=False, expansion=True,  train_test='test')
 evaulate.evaluate()
 
