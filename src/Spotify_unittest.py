@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 from indexing.BM25_v0_k12_b08 import *
-from evaluate_train_qrels import Evaluate
+from evaluate import Evaluate
 from search import Search
 from sklearn.feature_extraction.text import CountVectorizer
 

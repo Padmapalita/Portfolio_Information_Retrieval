@@ -53,11 +53,9 @@ class Search:
         
         # pseudo relevance feedback - using information derived from initial ranking to expand query 
         new_words = []
-        # get the top 3 documents from ranking
+        # get 5 most common words from top 3 ranked documents
         for i in range(3):
-            idf = self.bm25_df.sort_values(by = [sorted_scores[i][0]], axis = 1, ascending = False)
-            # find the 5 most common words
-            new_words.extend(idf.columns.values[:5].tolist())
+            new_words.extend(self.bm25_df.loc[sorted_scores[i][0]].nlargest(5).index.tolist())
         new_words = ' '.join(new_words)
         query = query + ' ' + new_words 
         
