@@ -29,7 +29,7 @@ to run this project with a demonstration index please follow these steps:
     # evaulate = Evaluate(k=100 ,use_synonym=False, expansion=True,  train_test='test')
     # evaulate.evaluate()
 Don't forget to revert after running the unit testing.
-Also, replace the documents in Sampled_docs with the files ts1.json and ts2.json that are in Testing/Sampled_docs.)
+Also, replace the documents in Sampled_docs with the files ts1.json and ts2.json that are in Testing/Sampled_docs_testing.)
 
 9. run unit_testing.py
 
