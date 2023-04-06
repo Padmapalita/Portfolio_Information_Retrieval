@@ -25,6 +25,13 @@ to run this project with a demonstration index please follow these steps:
 
 8. run python evaluation.py
 
+(to run the unit testing, first edit the 'evaluation.py' file to comment out the final 2 lines:
+    # evaulate = Evaluate(k=100 ,use_synonym=False, expansion=True,  train_test='test')
+    # evaulate.evaluate()
+Don't forget to revert after running the unit testing.)
+
+9. run unit_testing.py
+
 
 
 
@@ -35,4 +42,5 @@ following packages should be installed via conda, or installer of choice:
 - matplotlib 3.7.1
 - nltk 3.7
 - scikit-learn 1.2.0
-- feedparser 
+- feedparser
+- pysimplegui 4.60.4
