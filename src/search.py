@@ -4,6 +4,7 @@ import pandas as pd
 class Search:
     def __init__(self, mode='default'):
         print("from Search trying to load pickle \n")
+        self.mode = mode
         if mode == 'testing': # hidden option for testing
             self.bm25_df = pd.read_pickle("../Files/Local_pickles/testing_index.pkl")
         else:
@@ -25,7 +26,7 @@ class Search:
         """
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)
         """
-        q_terms = query.split(' ')
+        q_terms = [term.lower() for term in query.split(' ')]
         # Only counts query terms that are in the bm25_df, to avoid KeyError
         q_terms = [term for term in q_terms if term in self.bm25_df.columns]
         q_terms_only = self.bm25_df[q_terms]
@@ -42,7 +43,7 @@ class Search:
         """
         returns the BM25 results as a list of tuples (df.index,value, BM25_score)
         """
-        q_terms = query.split(' ')
+        q_terms = [term.lower() for term in query.split(' ')]
         # Only counts query terms that are in the bm25_df, to avoid KeyError
         q_terms = [term for term in q_terms if term in self.bm25_df.columns]
         q_terms_only = self.bm25_df[q_terms]
@@ -76,7 +77,10 @@ class Search:
         This version should return human readable results 
         """
         # Assumes will never want more than 100 results
-        metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
+        if self.mode == 'testing':
+            metadata = pd.read_csv("../Files/Local_pickles/unittest_metadata.csv", index_col="episode_filename_prefix")
+        else:
+            metadata = pd.read_csv("../Files/Local_pickles/metadata.csv", index_col="episode_filename_prefix")
         # metadata = pd.read_csv("../Files/Local_pickles/metadata_test.csv", index_col="episode_filename_prefix")
         print("csv has been read")
         #print(metadata[:5])
