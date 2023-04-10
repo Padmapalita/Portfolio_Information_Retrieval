@@ -28,7 +28,7 @@ class Evaluate:
         self.k = k
         self.inc_desc = inc_desc
         self.use_synonym = use_synonym
-        self.version = "desc_false_k20_b09"
+        self.version = "demo_k20_b09"
         self.train_test = train_test
         self.expansion = expansion
 
@@ -271,7 +271,20 @@ class Evaluate:
         self.plot_precision_recall_pairs()
         return 
 
-# for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
-evaulate = Evaluate(k=100 ,use_synonym=False, expansion=True,  train_test='test')
+
+# Evaluate with basic BM25 search
+evaulate = Evaluate(k=100 ,use_synonym=False, expansion=False,  train_test='test')
 evaulate.evaluate()
+
+# # for experiments we will try inc_desc=False and use_synonym=True as parameters of Evaluate
+# evaulate = Evaluate(k=100 ,use_synonym=False, expansion=True,  train_test='test')
+# evaulate.evaluate()
+
+# # run evaluation with use_synonym=True
+# evaulate = Evaluate(k=100 ,use_synonym=True, expansion=False,  train_test='test')
+# evaulate.evaluate()
+
+# #submission script to run
+# evaulate = Evaluate(k=100 ,use_synonym=False, expansion=False,  train_test='train')
+# evaulate.evaluate()
 
