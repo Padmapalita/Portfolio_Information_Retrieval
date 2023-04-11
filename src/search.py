@@ -11,7 +11,7 @@ class Search:
             print("Enter the filename of the pickle to load (including the '.pkl' extension),")
             filename = input("or [D] to use the default option: ")
             if filename == 'D':
-                self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_Final_k20_b09.pkl")
+                self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_FINAL_k20_b09.pkl")
                 #self.bm25_df = pd.read_pickle("../Files/Local_pickles/BM25_demonstration.pkl")
                 
             else:
